@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Limpar dados de atividade — Carbópolis{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.dashboard') }}" class="badge mb-3 inline-block"><i class="fa-solid fa-arrow-left"></i> Voltar ao painel</a>
+<section class="hud-panel p-4 sm:p-6 max-w-3xl mx-auto">
+  <h1 class="text-xl sm:text-2xl font-bold text-red-200 mb-2"><i class="fa-solid fa-triangle-exclamation"></i> Limpar dados de atividade</h1>
+  <p class="mb-3">Esta ação apaga permanentemente os dados listados abaixo de todos os grupos. As senhas, missões, textos e parâmetros do simulador serão preservados.</p>
+  <p class="mb-4 text-amber-200 font-semibold">Atenção: isso não redefine as senhas nem corrige o erro de senha incorreta. Após confirmar, todas as equipes precisarão entrar novamente.</p>
+
+  <ul class="grid sm:grid-cols-2 gap-2 mb-5">
+    {% for label, count in counts %}
+    <li class="hud-panel p-3 flex justify-between gap-3"><span>{{ label }}</span><strong>{{ count }}</strong></li>
+    {% endfor %}
+  </ul>
+
+  <form method="POST" action="{{ url_for('admin.reset_user_data') }}" class="grid gap-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label for="confirmation" class="text-sm">Para confirmar, digite <strong>LIMPAR DADOS</strong>.</label>
+    <input id="confirmation" name="confirmation" type="text" autocomplete="off" required class="input-hud" placeholder="LIMPAR DADOS">
+    <div class="flex flex-wrap gap-2">
+      <button type="submit" class="btn-hud !w-auto border border-red-500 bg-red-950 text-red-100"><i class="fa-solid fa-trash-can"></i> Apagar dados listados</button>
+      <a href="{{ url_for('admin.dashboard') }}" class="btn-hud btn-blue !w-auto">Cancelar</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

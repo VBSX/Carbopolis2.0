@@ -39,28 +39,9 @@ def create_app(config_class=Config):
     )
     def reset_user_data(yes):
         """Apaga atividade das equipes, preservando conteúdo e configuração."""
-        from models import (
-            InterviewLog,
-            LabSample,
-            ReportDraft,
-            SavedQuote,
-            SimulationResult,
-            StudentTaskProgress,
-        )
+        from user_data import clear_user_data, get_user_data_counts
 
-        records_to_clear = (
-            ("Conversas de entrevistas", InterviewLog),
-            ("Laudos e amostras", LabSample),
-            ("Depoimentos salvos", SavedQuote),
-            ("Resultados do simulador", SimulationResult),
-            ("Rascunhos do dossiê", ReportDraft),
-            ("Respostas às missões", StudentTaskProgress),
-            ("Sessões e nomes dos integrantes", UserSession),
-        )
-        counts = [
-            (label, model.query.count())
-            for label, model in records_to_clear
-        ]
+        counts = get_user_data_counts()
 
         if not yes:
             click.echo("Prévia: estes dados seriam apagados:")
@@ -73,9 +54,7 @@ def create_app(config_class=Config):
             return
 
         try:
-            for _label, model in records_to_clear:
-                db.session.query(model).delete(synchronize_session=False)
-            db.session.commit()
+            clear_user_data()
         except SQLAlchemyError as error:
             db.session.rollback()
             current_app.logger.exception("Falha ao limpar dados de atividade.")

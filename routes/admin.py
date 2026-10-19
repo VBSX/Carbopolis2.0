@@ -3,10 +3,13 @@ import math
 import secrets
 from pathlib import Path
 
-from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
+from flask_login import logout_user
 from extensions import db
 from models import ContentBlock, Role, SimulationVariable, Task
 from models import LabSample, SimulationResult, UserSession
+from sqlalchemy.exc import SQLAlchemyError
+from user_data import clear_user_data, get_user_data_counts
 from utils import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -56,6 +59,50 @@ def dashboard():
     contents = ContentBlock.query.order_by(ContentBlock.id).all()
     simvars = SimulationVariable.query.order_by(SimulationVariable.var_key).all()
     return render_template("admin/dashboard.html", stats=stats, roles=roles, tasks=tasks, contents=contents, simvars=simvars)
+
+
+@admin_bp.route("/reset-user-data", methods=["GET", "POST"])
+@admin_required
+def reset_user_data():
+    if request.method == "POST":
+        csrf_token = request.form.get("csrf_token", "")
+        expected_token = session.get("reset_user_data_csrf", "")
+        if (
+            not expected_token
+            or not secrets.compare_digest(csrf_token, expected_token)
+            or request.form.get("confirmation") != "LIMPAR DADOS"
+        ):
+            flash(
+                "Confirmação inválida. Nenhum dado foi apagado; revise a prévia e tente novamente.",
+                "error",
+            )
+            return redirect(url_for("admin.reset_user_data"))
+
+        try:
+            counts = clear_user_data()
+        except SQLAlchemyError:
+            db.session.rollback()
+            current_app.logger.exception("Falha ao limpar dados de atividade pelo painel administrativo.")
+            flash("A limpeza falhou e foi revertida. Nenhum dado foi confirmado como apagado.", "error")
+            return redirect(url_for("admin.dashboard"))
+
+        session.pop("reset_user_data_csrf", None)
+        logout_user()
+        current_app.logger.warning("Dados de atividade apagados pelo painel administrativo: %s", counts)
+        flash(
+            "Limpeza concluída. As senhas e configurações dos grupos foram preservadas; entre novamente.",
+            "success",
+        )
+        return redirect(url_for("auth.login"))
+
+    csrf_token = secrets.token_urlsafe(32)
+    session["reset_user_data_csrf"] = csrf_token
+    return render_template(
+        "admin/reset_user_data.html",
+        counts=get_user_data_counts(),
+        csrf_token=csrf_token,
+    )
+
 
 @admin_bp.route("/content", methods=["GET", "POST"])
 @admin_required

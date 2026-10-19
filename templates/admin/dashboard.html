@@ -13,7 +13,9 @@
 <div class="flex gap-2 mb-4">
 <a href="{{ url_for('admin.content_editor') }}" class="btn-hud btn-blue !w-auto"><i class="fa-solid fa-pen"></i> Conteúdo</a>
 <a href="{{ url_for('admin.task_editor') }}" class="btn-hud btn-blue !w-auto"><i class="fa-solid fa-list-check"></i> Missões</a>
+<a href="{{ url_for('admin.reset_user_data') }}" class="btn-hud !w-auto border border-red-500 text-red-200"><i class="fa-solid fa-trash-can"></i> Limpar dados de atividade</a>
 </div>
+<p class="text-sm text-amber-200 mb-4"><i class="fa-solid fa-circle-info"></i> A limpeza remove dados de atividade, mas não redefine senhas nem corrige problemas de login.</p>
 <div class="hud-panel p-3 sm:p-4">
 <h2 class="font-bold mb-2"><i class="fa-solid fa-sliders"></i> Parâmetros do Simulador</h2>
 <form method="POST" action="{{ url_for('admin.simvars_update') }}" class="grid md:grid-cols-3 gap-2">

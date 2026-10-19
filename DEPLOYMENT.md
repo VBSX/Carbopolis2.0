@@ -44,6 +44,13 @@ suspender quando estiver ocioso.
 
 ## Limpar os dados antes de liberar o sistema
 
+O painel do administrador também oferece **Limpar dados de atividade**: ele
+mostra uma prévia, exige digitar `LIMPAR DADOS` e encerra todas as sessões
+depois da limpeza. Essa ação preserva as senhas e, portanto, **não corrige
+senhas de login inválidas**. Se nenhum administrador consegue entrar, use o
+comando local abaixo contra o banco de produção ou corrija as credenciais do
+banco antes de tentar acessar o painel.
+
 Configure `APP_ENV=production` e `DATABASE_URL` na máquina local para apontar
 ao banco de produção correto. Execute os comandos a seguir na raiz do projeto;
 o primeiro apenas mostra a prévia:
