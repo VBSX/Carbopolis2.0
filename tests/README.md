@@ -29,3 +29,14 @@ configuração.
 A suíte cobre login/logout, acesso por grupo, páginas compartilhadas e restritas,
 tela inicial com imagem configurável e sem mapa interativo, laboratório, missões, dossiê,
 simulador, entrevistas, tutor e ações principais do painel administrativo.
+
+## Limpar dados de atividade para produção
+
+Antes de abrir o sistema às equipes, o administrador pode executar
+`flask --app app reset-user-data` no Shell do serviço Render para ver a prévia
+e `flask --app app reset-user-data --yes` para confirmar a limpeza. O comando
+remove conversas, laudos, amostras, depoimentos, resultados do simulador,
+rascunhos, progresso e sessões com nomes de integrantes. Preserva grupos/senhas,
+missões e conteúdo administrativo. Execute manualmente uma vez; não inclua a
+limpeza no Build Command, Start Command ou pre-deploy. Consulte
+[DEPLOYMENT.md](../DEPLOYMENT.md) para detalhes.

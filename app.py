@@ -1,8 +1,10 @@
-from flask import Flask, flash, redirect, url_for
+import click
+from flask import Flask, current_app, flash, redirect, url_for
 from flask_login import current_user
 
 from config import Config
 from extensions import db, login_manager
+from sqlalchemy.exc import SQLAlchemyError
 
 
 def create_app(config_class=Config):
@@ -28,6 +30,66 @@ def create_app(config_class=Config):
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.get(UserSession, int(user_id))
+
+    @app.cli.command("reset-user-data")
+    @click.option(
+        "--yes",
+        is_flag=True,
+        help="Confirma a exclusão permanente dos dados pessoais e de atividade.",
+    )
+    def reset_user_data(yes):
+        """Apaga atividade das equipes, preservando conteúdo e configuração."""
+        from models import (
+            InterviewLog,
+            LabSample,
+            ReportDraft,
+            SavedQuote,
+            SimulationResult,
+            StudentTaskProgress,
+        )
+
+        records_to_clear = (
+            ("Conversas de entrevistas", InterviewLog),
+            ("Laudos e amostras", LabSample),
+            ("Depoimentos salvos", SavedQuote),
+            ("Resultados do simulador", SimulationResult),
+            ("Rascunhos do dossiê", ReportDraft),
+            ("Respostas às missões", StudentTaskProgress),
+            ("Sessões e nomes dos integrantes", UserSession),
+        )
+        counts = [
+            (label, model.query.count())
+            for label, model in records_to_clear
+        ]
+
+        if not yes:
+            click.echo("Prévia: estes dados seriam apagados:")
+            for label, count in counts:
+                click.echo(f"  {label}: {count}")
+            click.echo(
+                "Nada foi alterado. Para confirmar a limpeza, execute novamente "
+                "com --yes."
+            )
+            return
+
+        try:
+            for _label, model in records_to_clear:
+                db.session.query(model).delete(synchronize_session=False)
+            db.session.commit()
+        except SQLAlchemyError as error:
+            db.session.rollback()
+            current_app.logger.exception("Falha ao limpar dados de atividade.")
+            raise click.ClickException(
+                "A limpeza falhou e a transação foi revertida; nenhum dado foi "
+                "confirmado como apagado."
+            ) from error
+
+        click.echo("Dados de atividade apagados:")
+        for label, count in counts:
+            click.echo(f"  {label}: {count}")
+        click.echo(
+            "Grupos, senhas, missões, conteúdo e configurações do simulador foram preservados."
+        )
 
     @app.before_request
     def touch_session():

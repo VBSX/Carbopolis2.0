@@ -153,6 +153,70 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertIn(b'placeholder="Digite a senha do grupo"', response.data)
         self.assertNotIn(b"Ex.: energia", response.data)
 
+    def test_reset_user_data_cli_previews_and_clears_activity_only_when_confirmed(self):
+        role = self.roles["comunidade"]
+        session = self.sessions["comunidade"]
+        session.members_text = "Nome de teste"
+        task = Task.query.filter_by(role_id=role.id).one()
+        db.session.add_all(
+            [
+                InterviewLog(
+                    user_session_id=session.id,
+                    npc_id="agricultora",
+                    user_message="Pergunta de teste",
+                    assistant_message="Resposta de teste",
+                ),
+                SavedQuote(
+                    role_id=role.id,
+                    character_name="Dona Maria",
+                    quote_text="Depoimento pessoal de teste",
+                ),
+                LabSample(role_id=role.id, sample_type="water", ph_value=6.8),
+                SimulationResult(
+                    role_id=role.id,
+                    energy_choice="thermal",
+                    env_score=50,
+                    social_score=50,
+                    economic_score=50,
+                    energy_score=50,
+                ),
+                ReportDraft(role_id=role.id, jury_question="Pergunta de teste"),
+                StudentTaskProgress(
+                    task_id=task.id,
+                    role_id=role.id,
+                    answer_text="Resposta pessoal de teste",
+                    is_completed=True,
+                ),
+            ]
+        )
+        db.session.commit()
+
+        runner = self.app.test_cli_runner()
+        preview = runner.invoke(args=["reset-user-data"])
+        self.assertEqual(preview.exit_code, 0, preview.output)
+        self.assertIn("Nada foi alterado", preview.output)
+        self.assertEqual(InterviewLog.query.count(), 1)
+        self.assertEqual(UserSession.query.count(), len(STUDENT_ROLES) + 1)
+
+        result = runner.invoke(args=["reset-user-data", "--yes"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        self.assertIn("Grupos, senhas, missões, conteúdo e configurações", result.output)
+        for model in (
+            InterviewLog,
+            LabSample,
+            SavedQuote,
+            SimulationResult,
+            ReportDraft,
+            StudentTaskProgress,
+            UserSession,
+        ):
+            with self.subTest(model=model.__name__):
+                self.assertEqual(model.query.count(), 0)
+        self.assertEqual(Role.query.count(), len(STUDENT_ROLES) + 1)
+        self.assertEqual(Task.query.count(), len(STUDENT_ROLES))
+        self.assertEqual(ContentBlock.query.count(), 3)
+        self.assertEqual(SimulationVariable.query.count(), 6)
+
     def get_as(self, role_name, path):
         self.login(role_name)
         return self.client.get(path, follow_redirects=False)
