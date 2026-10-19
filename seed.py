@@ -64,16 +64,6 @@ CONTENTS = [
 ]
 
 
-def password_for_role(role_name, default_password):
-    env_key = f"{role_name.upper()}_PASSWORD"
-    password = os.getenv(env_key)
-    if password:
-        return password
-    if os.getenv("APP_ENV") == "production":
-        raise RuntimeError(f"Configure {env_key} before seeding production.")
-    return default_password
-
-
 def run():
     # Seed usa a conexao direta (UNPOOLED) conforme skill neon-postgres.
     direct = os.getenv("DATABASE_URL_UNPOOLED")
@@ -84,7 +74,6 @@ def run():
     with app.app_context():
         db.create_all()
         for name, pwd, disp, desc in ROLES:
-            pwd = password_for_role(name, pwd)
             r = Role.query.filter_by(name=name).first()
             if not r:
                 r = Role(name=name, password=pwd, display_name=disp, description=desc)

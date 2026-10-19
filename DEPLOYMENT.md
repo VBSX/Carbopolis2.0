@@ -16,30 +16,25 @@ Antes de confirmar o Blueprint, preencha as variáveis solicitadas:
 - `DATABASE_URL_UNPOOLED`: URL **direta** do Neon, usada pelo seed inicial.
 - `GEMINI_API_KEY`: chave da API do Gemini.
 
-O Render gera `SECRET_KEY` e senhas aleatórias individuais para os grupos,
-incluindo a administração. Consulte os valores em **Environment** no painel do
-Render após criar o serviço e compartilhe as senhas somente com os grupos
-correspondentes.
+O Render gera `SECRET_KEY`. As senhas padrão dos grupos permanecem: TermoBR
+`termo`, HydroSul `hidro`, Comunidade `ivai`, Cientistas `energia` e
+administração `admin`.
 
 O build não executa o seed nem apaga dados. Para inicializar um banco de
 produção novo, configure temporariamente na máquina local as variáveis
-`APP_ENV=production`, `DATABASE_URL_UNPOOLED` e as cinco senhas geradas pelo
-Render (`TERMOBR_PASSWORD`, `HYDROSUL_PASSWORD`, `COMUNIDADE_PASSWORD`,
-`CIENTISTAS_PASSWORD` e `ADMIN_PASSWORD`). Execute o comando abaixo uma única
-vez, na raiz do projeto:
+`APP_ENV=production` e `DATABASE_URL_UNPOOLED`. Execute o comando abaixo uma
+única vez, na raiz do projeto:
 
 ```sh
 python seed.py
 ```
 
-Use os valores das variáveis configurados no Render; não os grave em arquivos
-versionados. O seed usa a URL direta e recusa senhas padrão quando
-`APP_ENV=production`. Não o inclua no comando de build, start ou pre-deploy:
-ele atualiza conteúdo administrável e também define as senhas das equipes. A
-aplicação cria tabelas ausentes no startup; mudanças futuras de esquema devem
-ser planejadas como migrações. O plano gratuito do Render não oferece shell
-para executar comandos avulsos; por isso, execute o seed localmente com acesso
-ao Neon de produção.
+O seed usa a URL direta e aplica as senhas padrão às equipes. Não o inclua no
+comando de build, start ou pre-deploy: ele também atualiza conteúdo
+administrável. A aplicação cria tabelas ausentes no startup; mudanças futuras
+de esquema devem ser planejadas como migrações. O plano gratuito do Render não
+oferece shell para executar comandos avulsos; por isso, execute o seed
+localmente com acesso ao Neon de produção.
 
 O plano gratuito não oferece disco persistente: imagens carregadas no painel
 administrativo em `static/uploads` podem desaparecer após reinícios ou novos
