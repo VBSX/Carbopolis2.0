@@ -1,0 +1,15 @@
+{% macro render_lab_sample(sample, show_notes=false, show_dossier_badge=false) -%}
+<div class="text-sm border-b border-[#1e3a5f] py-2">
+<div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+🧪 <b>#{{ sample.id }} {% if sample.sample_type == "water" %}Água{% elif sample.sample_type == "air" %}Ar{% else %}Amostra{% endif %}</b>
+{% if sample.ph_value is not none %}<span>pH {{ sample.ph_value }}</span>{% endif %}
+{% if sample.so2_ppm is not none %}<span>SO<sub>2</sub> {{ sample.so2_ppm }} ppm</span>{% endif %}
+{% if sample.nox_ppm is not none %}<span>NO<sub>x</sub> {{ sample.nox_ppm }} ppm</span>{% endif %}
+{% if sample.co2_ppm is not none %}<span>CO<sub>2</sub> {{ sample.co2_ppm }} ppm</span>{% endif %}
+{% if sample.temp_celsius is not none %}<span>Temperatura {{ sample.temp_celsius }}°C</span>{% endif %}
+{% if sample.od_value is not none %}<span>OD {{ sample.od_value }} mg/L</span>{% endif %}
+{% if show_dossier_badge and sample.saved_to_dossier %}<span class="badge badge-neon">No dossiê</span>{% endif %}
+</div>
+{% if show_notes and sample.notes %}<p class="text-slate-400 mt-1">{{ sample.notes }}</p>{% endif %}
+</div>
+{%- endmacro %}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{% block title %}Carbopolis 2.0{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="hud">
+<nav class="topnav sticky top-0 z-50 bg-[#081426f2] border-b border-[#1e3a5f] backdrop-blur px-3 py-2 flex justify-between items-center gap-2">
+<div class="flex items-center gap-2 min-w-0">
+<span class="text-xl">⚡🌱</span>
+<a href="/" class="font-bold hud-title truncate text-sm sm:text-base">CARBOPOLIS 2.0 <span class="hidden sm:inline text-cyan-300">— Ivai dos Campos</span></a>
+{% if current_role %}<span class="badge badge-neon whitespace-nowrap"><i class="fa-solid fa-shield-halved"></i>{{ role_labels.get(current_role, current_role) }}</span>{% endif %}
+</div>
+<div class="hidden md:flex gap-4 text-sm items-center">
+{% if current_role and current_role != 'admin' %}
+<a href="{{ url_for('student.home_view') }}"><i class="fa-solid fa-house"></i> Início</a>
+{% if current_role == 'cientistas' %}
+<a href="{{ url_for('student.scientists_view') }}"><i class="fa-solid fa-microscope"></i> Instituto Científico</a>
+<a href="{{ url_for('student.lab_view') }}"><i class="fa-solid fa-flask"></i> Laboratório</a>
+{% elif current_role == 'comunidade' %}
+<a href="{{ url_for('student.community_view') }}"><i class="fa-solid fa-house-chimney"></i> Comunidade</a>
+{% elif current_role == 'termobr' %}
+<a href="{{ url_for('student.termobr_view') }}"><i class="fa-solid fa-industry"></i> TermoBR</a>
+{% elif current_role == 'hydrosul' %}
+<a href="{{ url_for('student.hydrosul_view') }}"><i class="fa-solid fa-water"></i> HydroSul</a>
+{% endif %}
+<a href="{{ url_for('simulator.simulator_view') }}"><i class="fa-solid fa-sliders"></i> Simulador</a>
+<a href="{{ url_for('student.tasks_view') }}"><i class="fa-solid fa-scroll"></i> Missões</a>
+<a href="{{ url_for('student.report_view') }}"><i class="fa-solid fa-file-lines"></i> Dossiê</a>
+<a href="{{ url_for('chat.interview_page') }}"><i class="fa-solid fa-comments"></i> Entrevistas</a>
+{% endif %}
+{% if current_role == 'admin' %}<a href="{{ url_for('admin.dashboard') }}"><i class="fa-solid fa-gear"></i> Admin</a>{% endif %}
+{% if current_user.is_authenticated %}<a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>{% endif %}
+</div>
+{% if current_user.is_authenticated %}<a class="md:hidden badge" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i></a>{% endif %}
+</nav>
+<div class="max-w-6xl mx-auto p-3 sm:p-4 content-pad">
+{% with msgs = get_flashed_messages(with_categories=true) %}{% if msgs %}{% for c, m in msgs %}
+<div class="p-3 mb-2 rounded-xl border {% if c=='error' %}bg-red-950 border-red-500 text-red-200{% elif c=='success' %}bg-emerald-950 border-emerald-400 text-emerald-200{% else %}bg-sky-950 border-sky-400 text-sky-200{% endif %}"><i class="fa-solid {% if c=='error' %}fa-triangle-exclamation{% elif c=='success' %}fa-circle-check{% else %}fa-circle-info{% endif %}"></i> {{ m }}</div>
+{% endfor %}{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+</div>
+{% if current_role and current_role != 'admin' %}
+<nav class="bottombar md:hidden no-print"><div class="flex gap-1">
+<a href="{{ url_for('student.home_view') }}"><i class="fa-solid fa-house text-lg"></i>Início</a>
+{% if current_role == 'cientistas' %}
+<a href="{{ url_for('student.scientists_view') }}"><i class="fa-solid fa-microscope text-lg"></i>Ciência</a>
+<a href="{{ url_for('student.lab_view') }}"><i class="fa-solid fa-flask text-lg"></i>Lab</a>
+{% elif current_role == 'comunidade' %}
+<a href="{{ url_for('student.community_view') }}"><i class="fa-solid fa-house-chimney text-lg"></i>Vila</a>
+{% elif current_role == 'termobr' %}
+<a href="{{ url_for('student.termobr_view') }}"><i class="fa-solid fa-industry text-lg"></i>Termo</a>
+{% elif current_role == 'hydrosul' %}
+<a href="{{ url_for('student.hydrosul_view') }}"><i class="fa-solid fa-water text-lg"></i>Hidro</a>
+{% endif %}
+<a href="{{ url_for('simulator.simulator_view') }}"><i class="fa-solid fa-sliders text-lg"></i>Sim</a>
+<a href="{{ url_for('student.tasks_view') }}"><i class="fa-solid fa-scroll text-lg"></i>Missões</a>
+<a href="{{ url_for('student.report_view') }}"><i class="fa-solid fa-file-lines text-lg"></i>Dossiê</a>
+<a href="{{ url_for('chat.interview_page') }}"><i class="fa-solid fa-comments text-lg"></i>Entrevista</a>
+</div></nav>
+{% endif %}
+{% block scripts %}{% endblock %}
+{% if current_role and current_role != 'admin' %}
+{% include "components/tutor.html" %}
+<script src="{{ url_for('static', filename='js/tutor.js') }}" defer></script>
+{% endif %}
+{% if current_user.is_authenticated %}
+<div id="public-report-toast" class="hidden fixed top-20 right-4 z-[100] w-[min(24rem,calc(100vw-2rem))] rounded-xl border-2 border-amber-300 bg-slate-950 p-4 text-amber-100 shadow-2xl" role="status" aria-live="polite">
+<p id="public-report-toast-message" class="font-bold">⚠️ AVISO PÚBLICO: Os Cientistas acabaram de publicar um novo Laudo Ambiental!</p>
+<a id="public-report-toast-link" href="{{ url_for('student.home_view') }}#public-report-wall" class="btn-hud inline-block mt-3">Ver no Mural</a>
+<button id="public-report-toast-close" type="button" class="absolute top-2 right-2 text-slate-300 hover:text-white" aria-label="Fechar aviso">✕</button>
+</div>
+<script src="{{ url_for('static', filename='js/notifications.js') }}" defer></script>
+{% endif %}
+<script>
+  if (window.visualViewport) {
+    let last = window.visualViewport.height;
+    window.visualViewport.addEventListener('resize', () => {
+      const h = window.visualViewport.height;
+      if (h > last + 60) {
+        // Teclado fechou: forçar reflow de elementos fixed para corrigir sobreposição no Brave mobile
+        const els = document.querySelectorAll('.bottombar, .content-pad, .ai-tutor');
+        els.forEach(el => {
+          el.style.display = 'none';
+          void el.offsetHeight;
+          el.style.display = '';
+        });
+      }
+      last = h;
+    });
+  }
+</script>
+</body>
+</html>

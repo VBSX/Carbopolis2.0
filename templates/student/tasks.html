@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Quest Log — Carbopolis{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-1">
+<h1 class="text-xl sm:text-2xl font-bold hud-title"><i class="fa-solid fa-scroll text-emerald-300"></i> QUEST LOG</h1>
+<span class="badge badge-gold"><i class="fa-solid fa-trophy"></i> {{ progress.values()|selectattr('is_completed')|list|length }}/{{ tasks|length }} concluidas</span>
+</div>
+<p class="text-sm text-slate-400 mb-3">Responda às perguntas norteadoras do seu grupo. Tudo que salvar aqui aparece no <b>Dossiê Final</b>.</p>
+<div class="bar mb-4"><i style="width:{% if tasks|length %}{{ (progress.values()|selectattr('is_completed')|list|length/tasks|length*100)|round(0) }}{% else %}0{% endif %}%"></i></div>
+{% for t in tasks %}
+{% set p = progress.get(t.id) %}
+<details class="hud-panel quest {% if p and p.is_completed %}done{% endif %} p-3 sm:p-4 mb-3" {% if not p or not p.is_completed %}open{% endif %}>
+<summary class="cursor-pointer flex items-start gap-2 font-bold min-h-[48px]">
+<span class="text-lg">{% if t.action_type == 'action' %}🧪{% else %}❓{% endif %}</span>
+<span class="flex-1">{{ t.title }}</span>
+{% if p and p.is_completed %}<span class="badge badge-neon"><i class="fa-solid fa-check"></i>OK</span>{% else %}<span class="badge">pendente</span>{% endif %}
+</summary>
+<p class="text-sm text-cyan-200 mt-2 mb-2"><i class="fa-solid fa-quote-left"></i> {{ t.description }}</p>
+<form method="POST" class="flex flex-col gap-2">
+<input type="hidden" name="task_id" value="{{ t.id }}">
+<textarea name="answer_text" class="input-hud" rows="4" placeholder="Digite a resposta do grupo aqui...">{{ p.answer_text if p and p.answer_text else '' }}</textarea>
+<button class="btn-hud"><i class="fa-solid fa-floppy-disk"></i> Salvar Resposta</button>
+{% if p and p.is_completed %}<span class="text-xs text-emerald-300"><i class="fa-solid fa-circle-check"></i> Salva — pode editar e salvar de novo.</span>{% endif %}
+</form>
+</details>
+{% else %}
+<div class="hud-panel p-4">Nenhuma missão ativa para seu grupo.</div>
+{% endfor %}
+{% endblock %}

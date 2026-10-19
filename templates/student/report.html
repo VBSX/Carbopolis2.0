@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "components/lab_sample.html" import render_lab_sample %}
+{% block title %}Dossiê — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-file-lines text-amber-300"></i> DOSSIÊ DA AUDIÊNCIA</h1>
+<p class="text-sm text-slate-400 mb-3">Documento oficial do grupo para o Júri Simulado. Leve impresso ou no celular.</p>
+<div class="hud-panel p-3 sm:p-4 mb-3">
+<p><i class="fa-solid fa-shield-halved text-emerald-300"></i> <b>Grupo:</b> {{ role.display_name }} ({{ role.name }})</p>
+<p><i class="fa-solid fa-users text-sky-300"></i> <b>Integrantes:</b> {{ current_user.members_text or "—" }}</p>
+{% if last_sim %}
+<div class="mt-2 text-sm"><b><i class="fa-solid fa-sliders"></i> Simulação escolhida:</b> {{ last_sim.energy_choice }}
+<span class="badge badge-neon">Amb {{ last_sim.env_score }}</span>
+<span class="badge badge-neon">Soc {{ last_sim.social_score }}</span>
+<span class="badge badge-gold">Eco {{ last_sim.economic_score }}</span>
+<span class="badge">Ene {{ last_sim.energy_score }}</span></div>
+{% endif %}
+</div>
+<div class="hud-panel p-3 sm:p-4 mb-3">
+<h2 class="font-bold mb-2"><i class="fa-solid fa-scroll text-emerald-300"></i> Respostas às Perguntas Norteadoras</h2>
+{% for t in tasks %}
+{% set p = progress.get(t.id) %}
+<div class="border-b border-[#1e3a5f] py-2">
+<p class="text-sm text-cyan-200"><b>Q: {{ t.title }}</b><br><span class="text-slate-400">{{ t.description }}</span></p>
+<p class="text-sm mt-1"><b class="text-emerald-300">R:</b> {{ p.answer_text if p and p.answer_text else '<i class="text-slate-500">ainda sem resposta — vá ao Quest Log</i>'|safe }}</p>
+</div>
+{% else %}<p class="text-sm text-slate-400">Sem missões cadastradas.</p>{% endfor %}
+</div>
+<div class="hud-panel p-3 sm:p-4 mb-3">
+<h2 class="font-bold mb-2"><i class="fa-solid fa-flask text-violet-300"></i> Laudos do Laboratório</h2>
+{% for s in samples %}{{ render_lab_sample(s, show_notes=true) }}{% else %}<p class="text-sm text-slate-400">Sem análises no dossiê — vá ao Laboratório.</p>{% endfor %}
+</div>
+<section class="hud-panel p-3 sm:p-4 mb-3">
+<h2 class="font-bold mb-2"><i class="fa-solid fa-quote-left text-amber-300"></i> Depoimentos e Evidências Recolhidas</h2>
+{% for quote in quotes %}
+<blockquote class="border-l-4 border-amber-400 bg-[#0a1728] p-3 mb-2 rounded-r-lg">
+<p class="text-slate-200">“{{ quote.quote_text }}”</p>
+<footer class="text-sm text-amber-200 mt-2">— {{ quote.character_name }} <span class="text-slate-400">· {{ quote.timestamp.strftime("%d/%m/%Y %H:%M") }}</span></footer>
+</blockquote>
+{% else %}
+<p class="text-sm text-slate-400">Nenhum depoimento salvo. Use “Salvar depoimento” durante uma entrevista.</p>
+{% endfor %}
+</section>
+<div class="hud-panel p-3 sm:p-4 no-print">
+<form method="POST" class="flex flex-col gap-2">
+<input name="members_text" value="{{ current_user.members_text or '' }}" placeholder="Integrantes" class="input-hud">
+<textarea name="jury_question" placeholder="Pergunta aos grupos adversários no Júri" class="input-hud" rows="2">{{ draft.jury_question if draft else '' }}</textarea>
+<div class="flex flex-col sm:flex-row gap-2"><button class="btn-hud flex-1"><i class="fa-solid fa-floppy-disk"></i> Salvar dossiê</button>
+<a href="{{ url_for('student.report_pdf') }}" target="_blank" rel="noopener" class="btn-hud btn-ghost flex-1"><i class="fa-solid fa-file-pdf"></i> Abrir Dossiê em PDF</a></div>
+</form>
+</div>
+{% if draft and draft.jury_question %}
+<div class="hud-panel p-3 sm:p-4 mt-3"><b><i class="fa-solid fa-gavel"></i> Pergunta ao Júri:</b> {{ draft.jury_question }}</div>
+{% endif %}
+{% endblock %}

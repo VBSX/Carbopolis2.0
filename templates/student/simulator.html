@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Simulador — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-sliders text-amber-300"></i> {{ intro.title }}</h1>
+<p class="text-sm text-slate-400 mb-3">{{ intro.body_text }}</p>
+{% if intro.image_url %}<img src="{{ intro.image_url }}" alt="{{ intro.title }}" class="w-full max-h-72 object-cover rounded-xl mb-3" onerror="this.classList.add('hidden')">{% endif %}
+<div class="grid md:grid-cols-2 gap-3">
+<div class="hud-panel p-3 sm:p-4">
+<label class="text-sm font-bold"><i class="fa-solid fa-bolt"></i> Matriz energética
+<select id="energy_choice" class="input-hud mt-1">
+<option value="thermal">🔥 Proposta TermoBR — Termelétrica</option>
+<option value="hydro">🌊 Proposta HydroSul — Hidrelétrica</option>
+</select></label>
+<div id="thermal-controls" class="mt-3">
+<label class="flex items-center gap-2 mt-3 min-h-[48px] text-sm"><input type="checkbox" id="has_filters" class="w-6 h-6"> 🧰 Filtros / lavadores de gases <span class="badge">-70% SO<sub>2</sub>/NO<sub>x</sub></span></label>
+<label class="text-sm font-bold block mt-1">⛽ Combustível
+<select id="fuel_type" class="input-hud mt-1"><option value="gas">Gás Natural</option><option value="coal">Carvão Mineral</option></select></label>
+ </div>
+<div id="hydro-controls" class="mt-3 hidden">
+<label class="flex items-start gap-2 mt-3 text-sm">
+<input type="checkbox" id="has_fish_ladder" class="w-6 h-6 mt-1 flex-none">
+<span>🐟 Passagem para peixes (escada de peixes)
+<span class="block text-xs text-slate-400 font-normal">Canal com trechos de água em diferentes níveis que ajudaria os peixes a contornar a barragem e continuar o deslocamento pelo rio. Marque para considerar essa medida de redução do impacto estimado sobre a fauna; ela não eliminaria todos os efeitos.</span></span>
+</label>
+<label class="flex items-center gap-2 mt-2 min-h-[48px] text-sm"><input type="checkbox" id="has_relocation_plan" class="w-6 h-6"> 🏠 Reassentamento justo</label>
+<label class="block mt-3 text-sm font-bold">🌊 Altura da barragem: <span id="damLabel" class="font-mono2 text-amber-300">40</span>m
+<input type="range" id="dam_height" min="10" max="100" value="40" class="w-full" style="min-height:48px"></label>
+</div>
+<button onclick="simulate()" class="btn-hud mt-3"><i class="fa-solid fa-play"></i> Simular impacto</button>
+<p class="text-xs text-slate-400 mt-2">Os valores calculados são estimativas do cenário escolhido, caso a proposta correspondente fosse aprovada.</p>
+<div id="simOut" class="text-sm mt-3"></div>
+</div>
+<div class="hud-panel p-3 sm:p-4"><div class="relative w-full h-[360px] md:h-[420px] flex items-center justify-center p-2"><canvas id="radar"></canvas></div>
+{% if last_sim and last_sim.energy_choice in ('thermal', 'hydro') %}<p class="text-xs text-slate-400 mt-2">Última simulação: {% if last_sim.energy_choice == 'thermal' %}Proposta TermoBR{% else %}Proposta HydroSul{% endif %} — Amb {{ last_sim.env_score }} / Soc {{ last_sim.social_score }} / Eco {{ last_sim.economic_score }} / Ene {{ last_sim.energy_score }}</p>{% endif %}
+</div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/simulator.js', v=2) }}" defer></script>{% endblock %}

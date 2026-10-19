@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Entrevistas — Carbópolis{% endblock %}
+{% block content %}
+<section class="hud-panel rpg-interview p-3 sm:p-5">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+<div>
+<h1 class="text-xl sm:text-2xl font-bold hud-title"><i class="fa-solid fa-comments text-cyan-300"></i> Sala de Entrevistas</h1>
+<p class="text-sm text-slate-300 mt-1">Converse com personagens de Ivaí dos Campos e reúna evidências para a audiência.</p>
+</div>
+<label class="text-sm font-bold">Escolha quem entrevistar
+<select id="interview-npc" class="input-hud mt-1">
+{% for npc in npcs %}<option value="{{ npc.id }}" data-name="{{ npc.name }}" data-role="{{ npc.role }}" data-seed="{{ npc.seed }}">{{ npc.name }} — {{ npc.role }}</option>{% endfor %}
+</select>
+</label>
+</div>
+<div class="rpg-dialog">
+<div class="rpg-speaker">
+<img id="interview-avatar" src="https://api.dicebear.com/9.x/pixel-art/svg?seed={{ npcs[0].seed }}" alt="Avatar pixelado de {{ npcs[0].name }}">
+<div><b id="interview-name">{{ npcs[0].name }}</b><span id="interview-role">{{ npcs[0].role }}</span></div>
+</div>
+<div id="interview-messages" class="rpg-messages" aria-live="polite" aria-relevant="additions text">
+<p class="rpg-empty">Selecione um personagem e faça sua primeira pergunta.</p>
+</div>
+<p id="interview-status" class="rpg-status" role="status"></p>
+<div id="interview-suggestions" class="flex flex-wrap gap-2" aria-label="Sugestões de perguntas"></div>
+<form id="interview-form" class="rpg-form" data-endpoint="{{ url_for('chat.interview_chat') }}" data-history-url="{{ url_for('chat.interview_history', npc_id='__NPC__') }}">
+<label class="sr-only" for="interview-input">Sua pergunta ao personagem</label>
+<textarea id="interview-input" rows="4" maxlength="1500" placeholder="O que você gostaria de perguntar?" required></textarea>
+<button type="submit"><i class="fa-solid fa-paper-plane"></i><span>Enviar pergunta</span></button>
+</form>
+</div>
+<p class="text-xs text-slate-400 mt-3">As respostas são geradas pelo Google Gemini para fins educativos e podem conter imprecisões. Não envie dados pessoais; confirme informações importantes em fontes confiáveis.</p>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/interview.js') }}" defer></script>
+{% endblock %}

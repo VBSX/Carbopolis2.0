@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Comunidade — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-house-chimney text-amber-300"></i> COMUNIDADE RIBEIRINHA — IVAÍ DOS CAMPOS</h1>
+<p class="text-sm text-slate-400 mb-4">Participe do Comitê de Avaliação de Propostas Energéticas e analise possíveis impactos para a comunidade.</p>
+
+{% if current_role == 'comunidade' %}
+<!-- Cenário da comunidade -->
+<div class="hud-panel p-4 mb-4">
+<h2 class="font-bold text-slate-200 mb-2 flex items-center gap-2"><i class="fa-solid fa-layer-group text-cyan-300"></i> Cenário do Bairro</h2>
+<p class="text-sm text-slate-300 mb-3">A comunidade ribeirinha de Ivaí dos Campos vive às margens do rio, com agricultura familiar, pesca artesanal e ecoturismo como fontes de renda. A prefeitura avaliará as propostas TermoBR e HydroSul: se alguma for aprovada, poderá gerar energia e empregos, mas também poderá trazer riscos à saúde, ao ambiente e ao modo de vida local. Nenhuma das usinas existe ou está em construção.</p>
+<div class="grid sm:grid-cols-2 gap-3">
+<div class="hud-panel p-3 border-[#22ffaa33]">
+<h3 class="flex items-center gap-2 text-emerald-300 font-bold mb-2"><i class="fa-solid fa-thumbs-up"></i> O que a comunidade espera</h3>
+<ul class="text-sm text-slate-200 list-disc ml-4 space-y-1">
+<li>Energia estável e sem apagões.</li>
+<li>Possíveis empregos durante as obras, caso uma proposta seja aprovada.</li>
+<li>Possíveis receitas futuras para serviços públicos.</li>
+<li>Melhoria na infraestrutura local.</li>
+</ul>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-thumbs-down"></i> O que a comunidade teme</h3>
+<ul class="text-sm text-slate-200 list-disc ml-4 space-y-1">
+<li>Emissões atmosféricas e alterações da água previstas nos estudos.</li>
+<li>Possível desapropriação e perda de terras agrícolas se a HydroSul for aprovada.</li>
+<li>Possíveis efeitos sobre a pesca e a vida aquática.</li>
+<li>Possível aumento das tarifas de energia.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- Notícias externas -->
+<div class="hud-panel p-4 mb-4">
+<h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-newspaper text-cyan-300"></i> Notícias Externas</h2>
+<p class="text-xs text-slate-400 mb-3">Abra em nova aba para ler matérias de fontes jornalísticas e técnicas.</p>
+<div class="grid sm:grid-cols-2 gap-3">
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Impacto Hidrelétricas</h3>
+<a href="https://jornal.unicamp.br/edicao/735/o-legado-destrutivo-das-hidreletricas/" target="_blank" class="btn-hud btn-blue w-full text-left"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Impacto Termelétricas</h3>
+<a href="https://www.ihu.unisinos.br/categorias/641808-impactos-ambientais-e-sociais-das-termel%C3%A9tricas-a-carv%C3%A3o" target="_blank" class="btn-hud btn-blue w-full text-left"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#22ffaa33]">
+<h3 class="flex items-center gap-2 text-emerald-300 font-bold mb-2"><i class="fa-solid fa-thumbs-up"></i> 👍 Termelétrica — conteúdo patrocinado (setor carbonífero)</h3>
+<a href="https://g1.globo.com/sc/santa-catarina/especial-publicitario/diamante-geracao-de-energia-seguranca-energetica/noticia/2025/08/20/energia-que-gera-futuro-empregos-e-economia-do-setor-carbonifero.ghtml" target="_blank" class="btn-hud btn-blue w-full text-left"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#22ffaa33]">
+<h3 class="flex items-center gap-2 text-emerald-300 font-bold mb-2"><i class="fa-solid fa-thumbs-up"></i> 👍 Benefícios Hidrelétricas</h3>
+<a href="https://oglobo.globo.com/economia/cidades-vivem-com-fartura-o-desperdicio-de-2-bilhoes-em-royalties-de-hidreletricas-2826797" target="_blank" class="btn-hud btn-blue w-full text-left"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+</div>
+</div>
+
+<!-- Modais de impacto -->
+<div class="hud-panel p-4">
+<h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-info text-cyan-300"></i> Análise Detalhada de Impactos</h2>
+<p class="text-xs text-slate-400 mb-3">Clique nos botões para comparar benefícios e riscos que poderão ocorrer se cada proposta for aprovada. São informações gerais, não impactos já observados em Ivaí dos Campos.</p>
+<div class="grid sm:grid-cols-2 gap-3 mb-4">
+<button onclick="openModal('modal-termo-pro')" class="btn-hud btn-emerald w-full text-left"><i class="fa-solid fa-thumbs-up"></i> Termelétrica 👍</button>
+<button onclick="openModal('modal-termo-con')" class="btn-hud btn-rose w-full text-left"><i class="fa-solid fa-thumbs-down"></i> Termelétrica 👎</button>
+<button onclick="openModal('modal-hidro-pro')" class="btn-hud btn-emerald w-full text-left"><i class="fa-solid fa-thumbs-up"></i> Hidrelétrica 👍</button>
+<button onclick="openModal('modal-hidro-con')" class="btn-hud btn-rose w-full text-left"><i class="fa-solid fa-thumbs-down"></i> Hidrelétrica 👎</button>
+</div>
+</div>
+{% else %}
+<div class="hud-panel p-4 text-center">
+<p class="text-slate-300">Esta tela é exclusiva do grupo <b>Comunidade</b>. Faça login com um usuário deste grupo para acessar.</p>
+<a href="{{ url_for('auth.logout') }}" class="btn-hud mt-3">Sair e trocar de usuário</a>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{% include "student/_impact_modals.html" %}
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Conteúdo — Administração{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-2"><i class="fa-solid fa-pen"></i> Editor de Conteúdo</h1>
+<p class="text-sm text-slate-400 mb-3">Edite títulos, textos e imagens das páginas. A prévia acompanha suas alterações e mostra onde o conteúdo será exibido.</p>
+<div class="flex flex-wrap gap-2 mb-4">
+<a href="{{ url_for('admin.dashboard') }}" class="badge"><i class="fa-solid fa-arrow-left"></i> Voltar ao painel</a>
+</div>
+{% for c in contents %}
+<form method="POST" enctype="multipart/form-data" class="hud-panel p-3 sm:p-4 mb-4 grid gap-3 content-editor" data-section="{{ c.section_key }}">
+<input type="hidden" name="id" value="{{ c.id }}">
+<div>
+<b class="font-mono2 text-cyan-300">{{ c.section_key }}</b>
+<p class="text-xs text-slate-400">{{ {"map_intro": "Tela inicial — imagem exibida abaixo do texto de abertura.", "lab_intro": "Laboratório — imagem abaixo do texto de abertura.", "sim_intro": "Simulador — imagem abaixo do texto de abertura."}.get(c.section_key, "Prévia do conteúdo da página.") }}</p>
+</div>
+<div class="grid lg:grid-cols-2 gap-4">
+<div class="grid gap-2 content-fields">
+<label class="text-sm">Título<input name="title" value="{{ c.title }}" class="input-hud" data-preview-title></label>
+<label class="text-sm">Texto do corpo<textarea name="body_text" class="input-hud" rows="3" data-preview-body>{{ c.body_text or '' }}</textarea></label>
+<label class="text-sm">Rótulo do botão<input name="button_label" value="{{ c.button_label or '' }}" placeholder="Rótulo do botão" class="input-hud"></label>
+<label class="text-sm">Dica contextual<input name="hint_text" value="{{ c.hint_text or '' }}" placeholder="Dica exibida ao aluno" class="input-hud"></label>
+<label class="text-sm">Imagem por URL<input name="image_url" value="{{ c.image_url or '' }}" placeholder="https://... ou /static/uploads/..." class="input-hud" data-image-url></label>
+<label class="text-sm">Enviar imagem
+<input type="file" name="image_file" accept="image/png,image/jpeg,image/webp,image/gif" class="input-hud" data-image-file>
+</label>
+<p class="text-xs text-slate-400">JPG, PNG, WEBP ou GIF; até 8 MB. Uma nova imagem enviada substitui a imagem por URL.</p>
+{% if c.image_url %}<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remove_image" class="w-5 h-5"> Remover imagem atual</label>{% endif %}
+<button class="btn-hud"><i class="fa-solid fa-floppy-disk"></i> Salvar conteúdo</button>
+</div>
+<div class="rounded-xl border border-[#1e3a5f] bg-[#060d1a] p-3">
+<h2 class="text-sm font-bold text-cyan-200 mb-2"><i class="fa-solid fa-eye"></i> Prévia no site</h2>
+<div class="hud-panel p-3 content-preview">
+<b class="block text-lg hud-title" data-preview-title-output>{{ c.title }}</b>
+<p class="text-sm text-slate-300 mt-1 whitespace-pre-wrap" data-preview-body-output>{{ c.body_text or '' }}</p>
+<img {% if c.image_url %}src="{{ c.image_url }}"{% endif %} alt="Prévia da imagem" class="w-full {% if c.section_key == 'map_intro' %}min-h-[200px] max-h-[420px] object-contain bg-[#060d1a]{% else %}max-h-56 object-cover{% endif %} rounded-lg mt-3 {% if not c.image_url %}hidden{% endif %}" data-preview-image onerror="this.classList.add('hidden')">
+<p class="text-xs text-amber-200 mt-2" data-preview-placement>Posição: abaixo do texto de abertura{% if c.section_key == 'map_intro' %}, ocupando a área principal da tela inicial.{% else %}.{% endif %}</p>
+</div>
+</div>
+</div>
+</form>
+{% else %}
+<p class="text-slate-400">Nenhum conteúdo cadastrado.</p>
+{% endfor %}
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.content-editor').forEach(form => {
+  const title = form.querySelector('[data-preview-title]');
+  const body = form.querySelector('[data-preview-body]');
+  const imageUrl = form.querySelector('[data-image-url]');
+  const imageFile = form.querySelector('[data-image-file]');
+  const image = form.querySelector('[data-preview-image]');
+  let localPreview = null;
+  const updateImage = () => {
+    const source = localPreview || imageUrl.value.trim();
+    image.classList.toggle('hidden', !source);
+    if (source) image.src = source;
+    else image.removeAttribute('src');
+  };
+  title.addEventListener('input', () => form.querySelector('[data-preview-title-output]').textContent = title.value);
+  body.addEventListener('input', () => form.querySelector('[data-preview-body-output]').textContent = body.value);
+  imageUrl.addEventListener('input', () => {
+    localPreview = null;
+    imageFile.value = '';
+    const removeImage = form.querySelector('[name="remove_image"]');
+    if (removeImage) removeImage.checked = false;
+    updateImage();
+  });
+  imageFile.addEventListener('change', () => {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    localPreview = imageFile.files[0] ? URL.createObjectURL(imageFile.files[0]) : null;
+    const removeImage = form.querySelector('[name="remove_image"]');
+    if (removeImage && localPreview) removeImage.checked = false;
+    updateImage();
+  });
+  form.addEventListener('submit', () => { if (localPreview) URL.revokeObjectURL(localPreview); });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}TermoBR — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-industry text-amber-300"></i> TERMOBR — PROPOSTA DE USINA TERMELÉTRICA</h1>
+<p class="text-sm text-slate-400 mb-4">Material de referência sobre a proposta TermoBR para o Comitê de Avaliação de Propostas Energéticas. A usina ainda não foi aprovada nem construída; os dados descrevem cenários técnicos que deverão ser avaliados.</p>
+
+<div class="hud-panel p-4 mb-4">
+<h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-newspaper text-cyan-300"></i> Notícias e Documentos Técnicos</h2>
+<p class="text-xs text-slate-400 mb-3">Abra em nova aba para ler matérias e estudos técnicos.</p>
+<div class="grid sm:grid-cols-2 gap-3 mb-4">
+<div class="hud-panel p-3 border-[#22ffaa33]">
+<h3 class="flex items-center gap-2 text-emerald-300 font-bold mb-2"><i class="fa-solid fa-thumbs-up"></i> 👍 Termelétrica — conteúdo patrocinado (setor carbonífero)</h3>
+<a href="https://g1.globo.com/sc/santa-catarina/especial-publicitario/diamante-geracao-de-energia-seguranca-energetica/noticia/2025/08/20/energia-que-gera-futuro-empregos-e-economia-do-setor-carbonifero.ghtml" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Notícias Termelétrica</h3>
+<a href="https://girocapixaba.com.br/brasil/estudo-aponta-que-carvao-no-rs-pode-causar-13-mil-mortes-e-prejuizo-bilionario-ate-2040" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Hidrelétrica (Peixes 1)</h3>
+<a href="https://g1.globo.com/mt/mato-grosso/noticia/2020/04/14/relatorio-aponta-que-usina-de-energia-causou-r-22-milhoes-em-danos-ambientais-por-morte-de-peixes-em-mt.ghtml" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Hidrelétrica (Peixes 2)</h3>
+<a href="https://g1.globo.com/mt/mato-grosso/noticia/2020/09/04/usina-e-multada-em-r-36-milhoes-por-mortandade-de-7-toneladas-de-peixe-em-mt.ghtml" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#38bdf833]">
+<h3 class="flex items-center gap-2 text-cyan-300 font-bold mb-2"><i class="fa-solid fa-file-pdf"></i> 📄 TCC / Estudo Técnico</h3>
+<a href="https://dspace.sti.ufcg.edu.br/bitstream/riufcg/18069/1/DAYANNE%20ROCHA%20BARBOSA%20-%20TCC%20ENG.%20EL%C3%89TRICA%202010.pdf" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar PDF</a>
+</div>
+</div>
+</div>
+
+<div class="hud-panel p-4">
+<h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-info text-cyan-300"></i> Análises da Proposta TermoBR</h2>
+<p class="text-xs text-slate-400 mb-4">Clique nos botões abaixo para abrir cada análise detalhada.</p>
+<div class="grid sm:grid-cols-2 gap-3 mb-4">
+<button onclick="openModal('modal-termobr-ficha')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-file-contract"></i> Ficha Técnica e Alcance</button>
+<button onclick="openModal('modal-termobr-financeiro')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-coins"></i> Aspectos Financeiros</button>
+<button onclick="openModal('modal-termobr-ambiental')" class="btn-hud btn-rose w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-leaf"></i> Impacto Ambiental</button>
+<button onclick="openModal('modal-termobr-termodinamica')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-fire"></i> Fundamentos Termodinâmicos</button>
+<button onclick="openModal('modal-termobr-fluxograma')" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-diagram-project"></i> Esquema Técnico</button>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<style>
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,8,20,.85);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s linear .25s}
+.modal-backdrop.visible{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s}
+.modal-card{max-width:640px;width:100%;max-height:90vh;overflow-y:auto;border-radius:1rem;background:linear-gradient(180deg,#0d1c36,#0a1428);border:1px solid #1e3a5f;box-shadow:0 0 40px rgba(0,0,0,.6)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid #1e3a5f}
+.modal-header h3{font-size:1.1rem;margin:0;color:#e2e8f0}
+.close-btn{background:#1e3a5f;border:none;border-radius:50%;width:32px;height:32px;color:#cbd5e1;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+.close-btn:hover{background:#38bdf8;color:#0b1a33}
+.modal-body{padding:1.25rem}
+.modal-body h4{font-size:1rem;color:#38bdf8;margin-top:1rem;margin-bottom:.5rem;border-bottom:1px solid #1e3a5f;padding-bottom:.25rem}
+.modal-body h4:first-child{margin-top:0}
+.modal-body ul{list-style:disc;margin-left:1.25rem;margin-bottom:.75rem}
+.modal-body li{margin-bottom:.35rem;color:#e2e8f0;line-height:1.5}
+.modal-body p{color:#cbd5e1;line-height:1.6;margin-bottom:.75rem}
+.flow{display:flex;flex-direction:column;gap:.5rem}
+.flow-step{background:#0b1a33;border:1px solid #1e3a5f;border-radius:.75rem;padding:.75rem 1rem;text-align:center;font-weight:700;color:#e2e8f0}
+.flow-arrow{color:#38bdf8;font-size:1.25rem}
+@media (max-width: 640px){.modal-card{margin:.5rem}}
+</style>
+<script>
+function openModal(id){const m=document.getElementById(id);m.classList.add('visible');document.body.style.overflow='hidden';}
+function closeModal(id){const m=document.getElementById(id);m.classList.remove('visible');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-backdrop.visible').forEach(m=>m.classList.remove('visible'));document.body.style.overflow='';}});
+</script>
+<!-- Modal 1: Ficha Técnica e Alcance Energético -->
+<div id="modal-termobr-ficha" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-termobr-ficha')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">🏭 Ficha Técnica e Alcance Energético</h3><button class="close-btn" onclick="closeModal('modal-termobr-ficha')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<ul>
+<li><b>Capacidade Instalada:</b> 1.500 MW.</li>
+<li><b>Atendimento Populacional:</b> abastece de 2,25 a 3 milhões de lares (1.500 a 2.000 residências por MW).</li>
+<li><b>Eficiência Térmica Líquida:</b> 55% a 62% (dobro das usinas a carvão).</li>
+<li><b>Consumo de Combustível:</b> 6,5 milhões de m³ de gás natural por dia em capacidade máxima.</li>
+<li><b>Logística:</b> exige conexão direta a gasoduto ou terminal de regaseificação de GNL.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Modal 2: Aspectos Financeiros -->
+<div id="modal-termobr-financeiro" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-termobr-financeiro')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">💰 Aspectos Financeiros (CAPEX e OPEX)</h3><button class="close-btn" onclick="closeModal('modal-termobr-financeiro')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<ul>
+<li><b>Investimento Inicial (CAPEX):</b> R$ 4,35 bilhões a R$ 8,85 bilhões (R$ 2.900 a R$ 5.900 por kW).</li>
+<li><b>Economia Estrutural:</b> custa quase a metade de uma usina a carvão ao usar resfriamento direto pelo rio (Once-Through), sem torres evaporativas fechadas.</li>
+<li><b>Manutenção Fixa (OPEX):</b> R$ 120 milhões a R$ 150 milhões/ano.</li>
+<li><b>Custo Variável Unitário (CVU):</b> R$ 300 a R$ 500 por MWh gerado.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Modal 3: Impacto Ambiental -->
+<div id="modal-termobr-ambiental" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-termobr-ambiental')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">🌿 Impacto Ambiental e Soluções Locais</h3><button class="close-btn" onclick="closeModal('modal-termobr-ambiental')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<ul>
+<li><b>Baixa Emissão:</b> 0,35 a 0,42 ton de CO₂/MWh (menos da metade do carvão).</li>
+<li><b>Uso da Água:</b> eleva a temperatura do rio em apenas alguns graus para resfriamento.</li>
+<li><b>Proteção Ecológica:</b> equipe dedicada ao monitoramento e controle da vida aquática no entorno.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Modal 4: Fundamentos Termodinâmicos -->
+<div id="modal-termobr-termodinamica" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-termobr-termodinamica')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">🔥 Funcionamento e Fundamentos Termodinâmicos</h3><button class="close-btn" onclick="closeModal('modal-termobr-termodinamica')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<p>Convertem energia térmica em mecânica e em eletricidade por indução eletromagnética no gerador.</p>
+<h4>Ciclos</h4>
+<ul>
+<li><b>Ciclo a Vapor Rankine:</b> 42%-44% eficiência.</li>
+<li><b>Turbinas a Gás Brayton / Ciclo Combinado:</b> 50%-61% eficiência.</li>
+<li><b>Motores a Pistão:</b> até 45% eficiência.</li>
+</ul>
+<h4>Etapas</h4>
+<p>Tratamento de combustível → Combustão → Conversão termomecânica → Conversão eletromecânica (Lei de Faraday) → Elevação e recirculação.</p>
+</div>
+</div>
+</div>
+<!-- Modal 5: Esquema Técnico (Fluxograma) -->
+<div id="modal-termobr-fluxograma" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-termobr-fluxograma')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">📐 Esquema Técnico Ilustrado (Fluxograma)</h3><button class="close-btn" onclick="closeModal('modal-termobr-fluxograma')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<img src="{{ url_for('static', filename='images/termobr-esquema-tecnico.png') }}" alt="Esquema conceitual de uma proposta de usina termelétrica, mostrando a entrada de combustível, caldeira, exaustor, turbina, gerador, linhas de transmissão, condensador e fonte de água." class="block w-full h-auto rounded-lg">
+</div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Entrar — Carbópolis{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto hud-panel p-5 sm:p-6 mt-6 sm:mt-10">
+<h1 class="text-2xl font-bold hud-title mb-1">⚡🌱 CARBÓPOLIS 2.0</h1>
+<p class="text-slate-300 mb-4">O Dilema de Ivaí dos Campos — digite a <b>senha do seu grupo</b> para entrar no jogo.</p>
+<form method="POST" class="flex flex-col gap-3">
+<label class="text-sm font-bold">🔑 Senha do grupo<input type="password" name="password" placeholder="Digite a senha do grupo" required class="input-hud mt-1"></label>
+<label class="text-sm font-bold">👥 Integrantes do grupo (opcional)<input type="text" name="members_text" placeholder="Nomes de quem está jogando" class="input-hud mt-1"></label>
+<button class="btn-hud"><i class="fa-solid fa-right-to-bracket"></i> Entrar no jogo</button>
+</form>
+<div class="text-xs text-slate-400 mt-4"><i class="fa-solid fa-circle-info"></i> Cada grupo tem sua senha. Peça a senha ao professor.</div>
+</div>
+{% endblock %}

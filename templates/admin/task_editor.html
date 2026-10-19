@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Missões — Administração{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-2"><i class="fa-solid fa-list-check"></i> Gerenciador de Missões</h1>
+<a href="{{ url_for('admin.dashboard') }}" class="badge mb-3 inline-block"><i class="fa-solid fa-arrow-left"></i> Voltar ao painel</a>
+<div class="hud-panel p-3 sm:p-4 mb-3">
+<h2 class="font-bold mb-2"><i class="fa-solid fa-plus"></i> Criar nova missão</h2>
+<form method="POST" class="grid md:grid-cols-2 gap-2">
+<label class="text-sm">Grupo<select name="role_id" class="input-hud">{% for r in roles %}<option value="{{ r.id }}">{{ r.display_name }}</option>{% endfor %}</select></label>
+<label class="text-sm">Título<input name="title" placeholder="Título da missão" class="input-hud" required></label>
+<label class="text-sm md:col-span-2">Descrição / pergunta norteadora<input name="description" placeholder="Descrição ou pergunta norteadora" class="input-hud md:col-span-2"></label>
+<label class="text-sm">Tipo de resposta<select name="action_type" class="input-hud"><option value="text">Texto (resposta escrita)</option><option value="action">Ação (executar no jogo)</option></select></label>
+<label class="text-sm flex items-center gap-2"><input type="checkbox" name="is_active" checked class="w-6 h-6"> Missão ativa</label>
+<button class="btn-hud md:col-span-2"><i class="fa-solid fa-plus"></i> Criar missão</button>
+</form>
+</div>
+{% for t in tasks %}
+<div class="hud-panel p-3 mb-2">
+<form method="POST" class="grid md:grid-cols-4 gap-2">
+<input type="hidden" name="id" value="{{ t.id }}">
+<label class="text-sm">Grupo<select name="role_id" class="input-hud">{% for r in roles %}<option value="{{ r.id }}" {% if r.id==t.role_id %}selected{% endif %}>{{ r.display_name }}</option>{% endfor %}</select></label>
+<label class="text-sm">Título<input name="title" value="{{ t.title }}" class="input-hud"></label>
+<label class="text-sm">Tipo<input name="action_type" value="{{ t.action_type }}" class="input-hud"></label>
+<label class="text-sm flex items-center gap-2"><input type="checkbox" name="is_active" {% if t.is_active %}checked{% endif %} class="w-6 h-6"> Ativa</label>
+<label class="text-sm md:col-span-4">Descrição<input name="description" value="{{ t.description }}" class="input-hud md:col-span-4"></label>
+<button class="btn-hud btn-blue"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+<button name="action" value="delete" class="btn-hud" style="background:linear-gradient(180deg,#991b1b,#7f1d1d);border-color:#f8717166"><i class="fa-solid fa-trash"></i> Excluir</button>
+</form>
+</div>
+{% endfor %}
+{% endblock %}

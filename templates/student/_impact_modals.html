@@ -1,0 +1,76 @@
+{# Partial reutilizável: modais de análise de impactos (Genially) #}
+<style>
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,8,20,.8);backdrop-filter:blur(3px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal-card{max-width:640px;width:100%;max-height:88vh;overflow-y:auto;border-radius:1rem}
+.modal-card h3{font-size:1.1rem}
+.modal-card ul{list-style:disc;margin-left:1.2rem}
+.modal-hidden{display:none}
+</style>
+<p class="text-xs text-slate-400 mb-3">As análises a seguir descrevem possíveis efeitos gerais dessas tecnologias. Elas não confirmam impactos já ocorridos em Ivaí dos Campos; os efeitos locais dependeriam dos projetos aprovados e de seus estudos.</p>
+<div id="modal-termo-pro" class="modal-backdrop modal-hidden" onclick="if(event.target===this)closeModal('modal-termo-pro')">
+<div class="modal-card hud-panel p-4" role="dialog" aria-modal="true">
+<div class="flex justify-between items-start gap-2"><h3 class="font-bold hud-title">🏭 Termelétrica 👍 — Pontos positivos</h3><button onclick="closeModal('modal-termo-pro')" class="badge" aria-label="Fechar">✕</button></div>
+<ul class="text-sm text-slate-200 mt-2 flex flex-col gap-2">
+<li><b>Segurança Energética Contínua:</b> operação independente do clima e das chuvas (24/7), evitando racionamentos e garantindo estabilidade a indústrias e hospitais.</li>
+<li><b>Proximidade dos Centros Urbanos:</b> perto do local de consumo, reduz perdas de energia e evita desmatamento para longas linhas de transmissão.</li>
+<li><b>Arrecadação Rápida de Impostos:</b> receitas tributárias imediatas (como ICMS) direto para os cofres municipais e estaduais.</li>
+<li><b>Aproveitamento de Resíduos (Biomassa/Biogás):</b> com biomassa ou biogás, dá destino produtivo a resíduos agrícolas e ao lixo local.</li>
+</ul>
+</div>
+</div>
+<div id="modal-termo-con" class="modal-backdrop modal-hidden" onclick="if(event.target===this)closeModal('modal-termo-con')">
+<div class="modal-card hud-panel p-4" role="dialog" aria-modal="true">
+<div class="flex justify-between items-start gap-2"><h3 class="font-bold hud-title">🏭 Termelétrica 👎 — Pontos negativos</h3><button onclick="closeModal('modal-termo-con')" class="badge" aria-label="Fechar">✕</button></div>
+<div class="text-sm text-slate-200 mt-2 flex flex-col gap-3">
+<div><b>🩺 Saúde Pública e Poluição (IEMA &amp; DATASUS):</b><ul class="mt-1">
+<li><b>Emissões Tóxicas (IEMA):</b> milhões de toneladas de poluentes e gases de efeito estufa por ano.</li>
+<li><b>Falta de Fiscalização (IEMA):</b> a maioria dos municípios com termelétricas nem tem estação de monitoramento do ar.</li>
+<li><b>Internações (DATASUS):</b> picos crônicos de internações no SUS por asma, DPOC e doenças cardiovasculares, sobretudo em crianças e idosos.</li>
+</ul></div>
+<div><b>💸 Bolso do Consumidor (ANEEL &amp; ONS):</b><ul class="mt-1">
+<li><b>Energia Mais Cara:</b> maior custo de geração do sistema elétrico brasileiro.</li>
+<li><b>Gatilho de Tarifas:</b> o acionamento dispara as Bandeiras Vermelha e de Escassez Hídrica na conta de luz.</li>
+</ul></div>
+<div><b>🌊 Rio e Ecoturismo (ANA &amp; IBAMA):</b><ul class="mt-1">
+<li><b>Água Aquecida (ANA):</b> descarte de água quente altera oxigenação e ecossistema, ameaçando pesca e vida ribeirinha.</li>
+<li><b>Economia Local:</b> fuligem e degradação prejudicam ecoturismo e agricultura familiar de Ivaí do Vale.</li>
+<li><b>Retrocesso Climático (COP30):</b> fósseis contrariam metas do país e prendem a cidade a tecnologia poluente.</li>
+</ul></div>
+</div>
+</div>
+</div>
+<div id="modal-hidro-pro" class="modal-backdrop modal-hidden" onclick="if(event.target===this)closeModal('modal-hidro-pro')">
+<div class="modal-card hud-panel p-4" role="dialog" aria-modal="true">
+<div class="flex justify-between items-start gap-2"><h3 class="font-bold hud-title">🌊 Hidrelétrica 👍 — Pontos positivos</h3><button onclick="closeModal('modal-hidro-pro')" class="badge" aria-label="Fechar">✕</button></div>
+<ul class="text-sm text-slate-200 mt-2 flex flex-col gap-2">
+<li><b>Matriz Renovável e Limpa:</b> força da água com emissões bem menores que combustíveis fósseis.</li>
+<li><b>Royalties Mensais (CFURH):</b> compensação contínua à prefeitura para saúde e educação durante toda a vida útil.</li>
+<li><b>Uso Múltiplo do Reservatório:</b> turismo, esportes aquáticos, aquicultura e irrigação.</li>
+<li><b>Controle do Fluxo Hídrico:</b> contém cheias extremas e regulariza o rio nas secas.</li>
+</ul>
+</div>
+</div>
+<div id="modal-hidro-con" class="modal-backdrop modal-hidden" onclick="if(event.target===this)closeModal('modal-hidro-con')">
+<div class="modal-card hud-panel p-4" role="dialog" aria-modal="true">
+<div class="flex justify-between items-start gap-2"><h3 class="font-bold hud-title">🌊 Hidrelétrica 👎 — Pontos negativos</h3><button onclick="closeModal('modal-hidro-con')" class="badge" aria-label="Fechar">✕</button></div>
+<div class="text-sm text-slate-200 mt-2 flex flex-col gap-3">
+<div><b>🏚️ Expropriação e Deslocamento (MAB):</b><ul class="mt-1">
+<li><b>Expulsão:</b> mais de 1 milhão de pessoas já forçadas a sair de casa por barragens no Brasil.</li>
+<li><b>Indenizações Irrisórias:</b> compensações insuficientes para terras de mesma fertilidade.</li>
+</ul></div>
+<div><b>🔬 Impactos Mascarados (IBAMA / EIA):</b><ul class="mt-1">
+<li><b>Danos Subestimados:</b> EIAs de construtoras minimizam mortandade de peixes e assoreamento.</li>
+<li><b>Perda do Sustento:</b> bloqueio de rotas de peixes compromete pescadores locais.</li>
+</ul></div>
+<div><b>📈 Boomtown e Colapso (IBGE):</b><ul class="mt-1">
+<li><b>Inchaço:</b> migração desordenada infla aluguéis e sobrecarrega hospitais e segurança (ex.: Belo Monte).</li>
+<li><b>Desemprego Pós-Obra:</b> fim da obra deixa desemprego e conta social para o município.</li>
+</ul></div>
+</div>
+</div>
+</div>
+<script>
+function openModal(id){document.getElementById(id).classList.remove('modal-hidden');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.add('modal-hidden');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.add('modal-hidden'));});
+</script>

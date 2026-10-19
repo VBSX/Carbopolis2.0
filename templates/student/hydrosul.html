@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}HydroSul — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-water text-cyan-300"></i> HYDROSUL — PROPOSTA DE USINA HIDRELÉTRICA</h1>
+<p class="text-sm text-slate-400 mb-4">Material de referência sobre a proposta HydroSul para o Comitê de Avaliação de Propostas Energéticas. A usina ainda não foi aprovada nem construída; os dados descrevem cenários técnicos que deverão ser avaliados.</p>
+
+<div class="hud-panel p-4 mb-4">
+<h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-newspaper text-cyan-300"></i> Notícias e Documentos Técnicos</h2>
+<p class="text-xs text-slate-400 mb-3">Abra em nova aba para ler matérias e estudos técnicos.</p>
+<div class="grid sm:grid-cols-2 gap-3 mb-4">
+<div class="hud-panel p-3 border-[#22ffaa33]">
+<h3 class="flex items-center gap-2 text-emerald-300 font-bold mb-2"><i class="fa-solid fa-thumbs-up"></i> 👍 Notícias Hidrelétrica (Royalties)</h3>
+<a href="https://oglobo.globo.com/economia/cidades-vivem-com-fartura-o-desperdicio-de-2-bilhoes-em-royalties-de-hidreletricas-2826797" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Hidrelétrica (Morte de Peixes)</h3>
+<a href="https://g1.globo.com/mt/mato-grosso/noticia/2020/04/14/relatorio-aponta-que-usina-de-energia-causou-r-22-milhoes-em-danos-ambientais-por-morte-de-peixes-em-mt.ghtml" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Termelétrica (Emissões)</h3>
+<a href="https://www.cnnbrasil.com.br/nacional/producao-de-energia-por-termeletricas-cresce-77-em-2021-aponta-estudo/" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#f8717133]">
+<h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Termelétrica (Carvão)</h3>
+<a href="https://girocapixaba.com.br/brasil/estudo-aponta-que-carvao-no-rs-pode-causar-13-mil-mortes-e-prejuizo-bilionario-ate-2040" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+</div>
+<div class="hud-panel p-3 border-[#38bdf833]">
+<h3 class="flex items-center gap-2 text-cyan-300 font-bold mb-2"><i class="fa-solid fa-file-pdf"></i> 📄 Ebook / Livro Técnico</h3>
+<a href="https://imprensa.ufc.br/wp-content/uploads/2021/07/2019-geracao-hidroeletrica-e-eolioeletrica.pdf" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar PDF</a>
+</div>
+</div>
+</div>
+
+<div class="hud-panel p-4">
+<h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-info text-cyan-300"></i> Análises da Proposta HydroSul</h2>
+<p class="text-xs text-slate-400 mb-4">Clique nos botões abaixo para abrir cada análise detalhada.</p>
+<div class="grid sm:grid-cols-2 gap-3 mb-4">
+<button onclick="openModal('modal-hydrosul-longevidade')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-clock"></i> Longevidade e Manutenção</button>
+<button onclick="openModal('modal-hydrosul-eficiencia')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-bolt"></i> Eficiência do Sistema</button>
+<button onclick="openModal('modal-hydrosul-capacidade')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-percentage"></i> Fator de Capacidade</button>
+<button onclick="openModal('modal-hydrosul-funcionamento')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-fire"></i> Funcionamento e Engenharia</button>
+<button onclick="openModal('modal-hydrosul-esquema')" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-diagram-project"></i> Esquema da Barragem</button>
+</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<style>
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,8,20,.85);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s linear .25s}
+.modal-backdrop.visible{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s}
+.modal-card{max-width:640px;width:100%;max-height:90vh;overflow-y:auto;border-radius:1rem;background:linear-gradient(180deg,#0d1c36,#0a1428);border:1px solid #1e3a5f;box-shadow:0 0 40px rgba(0,0,0,.6)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid #1e3a5f}
+.modal-header h3{font-size:1.1rem;margin:0;color:#e2e8f0}
+.close-btn{background:#1e3a5f;border:none;border-radius:50%;width:32px;height:32px;color:#cbd5e1;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+.close-btn:hover{background:#38bdf8;color:#0b1a33}
+.modal-body{padding:1.25rem}
+.modal-body h4{font-size:1rem;color:#38bdf8;margin-top:1rem;margin-bottom:.5rem;border-bottom:1px solid #1e3a5f;padding-bottom:.25rem}
+.modal-body h4:first-child{margin-top:0}
+.modal-body ul{list-style:disc;margin-left:1.25rem;margin-bottom:.75rem}
+.modal-body li{margin-bottom:.35rem;color:#e2e8f0;line-height:1.5}
+.modal-body p{color:#cbd5e1;line-height:1.6;margin-bottom:.75rem}
+.flow{display:flex;flex-direction:column;gap:.5rem}
+.flow-step{background:#0b1a33;border:1px solid #1e3a5f;border-radius:.75rem;padding:.75rem 1rem;text-align:center;font-weight:700;color:#e2e8f0}
+.flow-arrow{color:#38bdf8;font-size:1.25rem}
+@media (max-width: 640px){.modal-card{margin:.5rem}}
+</style>
+<script>
+function openModal(id){const m=document.getElementById(id);m.classList.add('visible');document.body.style.overflow='hidden';}
+function closeModal(id){const m=document.getElementById(id);m.classList.remove('visible');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-backdrop.visible').forEach(m=>m.classList.remove('visible'));document.body.style.overflow='';}});
+</script>
+<!-- Modal 1: Longevidade e Manutenção -->
+<div id="modal-hydrosul-longevidade" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-hydrosul-longevidade')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">⏱️ Longevidade e Manutenção</h3><button class="close-btn" onclick="closeModal('modal-hydrosul-longevidade')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<ul>
+<li><b>Ciclo de Vida Útil:</b> projetada para operar de 65 a 85 anos (podendo ser ampliado com modernização/repotenciação).</li>
+<li><b>Custo Operacional:</b> oferece um dos menores custos de manutenção por MWh de todo o setor elétrico.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Modal 2: Eficiência do Sistema -->
+<div id="modal-hydrosul-eficiencia" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-hydrosul-eficiencia')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">⚡ Eficiência do Sistema</h3><button class="close-btn" onclick="closeModal('modal-hydrosul-eficiencia')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<ul>
+<li><b>Turbina:</b> converte de 85% a 95% da energia hidráulica em energia mecânica (rotação do eixo).</li>
+<li><b>Gerador:</b> converte de 95% a 98% da rotação mecânica em eletricidade.</li>
+<li><b>Perdas de Carga:</b> apenas 2% a 5% de perda por atrito nas tubulações forçadas e turbulência.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Modal 3: Fator de Capacidade -->
+<div id="modal-hydrosul-capacidade" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-hydrosul-capacidade')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">📊 Fator de Capacidade (50% a 70%)</h3><button class="close-btn" onclick="closeModal('modal-hydrosul-capacidade')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<ul>
+<li><b>Dependência Hídrica:</b> a entrega anual de energia oscila de acordo com o regime de chuvas e o nível dos reservatórios.</li>
+<li><b>Gestão Energética:</b> controlado pelo Operador Nacional do Sistema (ONS) para garantir a segurança da rede elétrica.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Modal 4: Funcionamento e Engenharia -->
+<div id="modal-hydrosul-funcionamento" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-hydrosul-funcionamento')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">🏗️ Funcionamento e Engenharia das Hidrelétricas</h3><button class="close-btn" onclick="closeModal('modal-hydrosul-funcionamento')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<p>Se aprovada, a proposta poderia incluir estruturas como reservatório, barragem, vertedouro, turbina, gerador e um sistema para devolver a água ao leito do rio. O projeto executivo e o EIA precisariam detalhar sua configuração e seus efeitos locais.</p>
+<h4>Processo</h4>
+<p>Em uma eventual operação, a água do reservatório passaria por túneis, canais ou tubulações até a casa de máquinas. Seu fluxo movimentaria a turbina e poderia retornar ao curso do rio; o gerador transformaria a rotação mecânica em eletricidade.</p>
+<h4>Rendimento</h4>
+<p>A capacidade dependeria do volume de água e da altura de queda. O rendimento de turbinas modernas pode variar de 75% a 92%; o desempenho real dependeria do projeto e das condições locais.</p>
+</div>
+</div>
+</div>
+<!-- Modal 5: Esquema da Barragem -->
+<div id="modal-hydrosul-esquema" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-hydrosul-esquema')">
+<div class="modal-card" role="dialog" aria-modal="true">
+<div class="modal-header"><h3 class="font-bold hud-title">📐 Esquema Técnico Ilustrado (Diagrama da Barragem)</h3><button class="close-btn" onclick="closeModal('modal-hydrosul-esquema')" aria-label="Fechar">✕</button></div>
+<div class="modal-body">
+<img src="{{ url_for('static', filename='images/hydrosul-esquema-barragem.png') }}" alt="Esquema conceitual de uma proposta de usina hidrelétrica com reservatório, canal, barragem, duto, casa de força, gerador, turbina, rio e linhas de distribuição de energia." class="block w-full h-auto rounded-lg">
+</div>
+</div>
+</div>
+{% endblock %}

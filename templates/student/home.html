@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Início — Carbópolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title"><i class="fa-solid fa-house text-emerald-300"></i> {{ intro.title }}</h1>
+<p class="text-sm text-slate-400 mb-3">{{ intro.body_text }}</p>
+{% if intro.image_url %}
+<div class="w-full min-h-[280px] max-h-[420px] rounded-2xl border border-[#1e3a5f] bg-[#060d1a] overflow-hidden flex items-center justify-center">
+<img src="{{ intro.image_url }}" alt="{{ intro.title }}" class="w-full max-h-[420px] object-contain" onerror="this.parentElement.remove()">
+</div>
+{% endif %}
+<section class="hud-panel p-4 mt-4" aria-labelledby="proposal-data-title">
+<h2 id="proposal-data-title" class="text-lg font-bold hud-title mb-2"><i class="fa-solid fa-scale-balanced text-cyan-300"></i> Dados gerais das propostas</h2>
+<p class="text-sm text-slate-300 mb-3">Ivaí dos Campos avalia alternativas para responder aos apagões. TermoBR e HydroSul são projetos ainda não aprovados nem construídos; os benefícios e riscos abaixo são possibilidades a investigar, não resultados já ocorridos na cidade.</p>
+<div class="grid lg:grid-cols-2 gap-3">
+<article class="rounded-xl border border-amber-700/70 bg-[#0a1728] p-4">
+<h3 class="font-bold text-amber-200"><i class="fa-solid fa-industry"></i> Projeto TermoBR — termelétrica</h3>
+<p class="text-sm text-slate-300 mt-2">Uma usina termelétrica queimaria combustível para produzir calor e gerar eletricidade. A proposta poderia fornecer energia de forma controlável, mas dependeria do combustível, dos sistemas de controle de emissões e da água necessária ao resfriamento.</p>
+<div class="grid sm:grid-cols-2 gap-3 mt-3">
+<div>
+<h4 class="text-sm font-bold text-emerald-300"><i class="fa-solid fa-thumbs-up"></i> Possíveis benefícios</h4>
+<ul class="text-sm text-slate-300 list-disc ml-4 mt-1 space-y-1">
+<li>Geração controlável, que poderia complementar fontes dependentes do clima.</li>
+<li>Possível reforço à oferta de energia e criação de empregos durante a implantação e operação.</li>
+<li>Possível arrecadação e contratação de serviços locais, conforme o projeto e os acordos.</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-bold text-rose-300"><i class="fa-solid fa-triangle-exclamation"></i> Riscos a avaliar</h4>
+<ul class="text-sm text-slate-300 list-disc ml-4 mt-1 space-y-1">
+<li>Emissões de gases de efeito estufa e de poluentes atmosféricos, conforme o combustível e o controle instalado.</li>
+<li>Consumo de água e possível alteração da temperatura da água devolvida ao ambiente.</li>
+<li>Custos e disponibilidade do combustível poderiam afetar o custo e a operação da energia.</li>
+</ul>
+</div>
+</div>
+</article>
+<article class="rounded-xl border border-cyan-700/70 bg-[#0a1728] p-4">
+<h3 class="font-bold text-cyan-200"><i class="fa-solid fa-water"></i> Projeto HydroSul — hidrelétrica</h3>
+<p class="text-sm text-slate-300 mt-2">Uma usina hidrelétrica usaria o fluxo da água para movimentar turbinas. A geração e os efeitos dependeriam do regime do rio, do desenho da barragem e da área que poderia ser inundada.</p>
+<div class="grid sm:grid-cols-2 gap-3 mt-3">
+<div>
+<h4 class="text-sm font-bold text-emerald-300"><i class="fa-solid fa-thumbs-up"></i> Possíveis benefícios</h4>
+<ul class="text-sm text-slate-300 list-disc ml-4 mt-1 space-y-1">
+<li>Fonte renovável que, durante a geração, geralmente apresenta baixas emissões diretas de poluentes do ar.</li>
+<li>Possibilidade de royalties e receitas futuras para o município, se houver aprovação e enquadramento legal.</li>
+<li>Reservatório poderia permitir usos como lazer ou irrigação, dependendo do local e do planejamento.</li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-bold text-rose-300"><i class="fa-solid fa-triangle-exclamation"></i> Riscos a avaliar</h4>
+<ul class="text-sm text-slate-300 list-disc ml-4 mt-1 space-y-1">
+<li>Formação do reservatório poderia alagar áreas, alterar habitats e exigir reassentamento de famílias.</li>
+<li>A barragem poderia modificar o fluxo do rio e afetar peixes, pesca e transporte de sedimentos.</li>
+<li>A produção dependeria da disponibilidade de água; estiagens poderiam reduzir a geração.</li>
+</ul>
+</div>
+</div>
+</article>
+</div>
+<p class="text-xs text-slate-400 mt-3">A comparação não decide qual proposta será escolhida. Consulte os estudos ambientais, os laudos publicados e as evidências antes do Júri Simulado.</p>
+</section>
+<section id="public-report-wall" class="hud-panel p-4 mt-4" aria-labelledby="public-report-title">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+<h2 id="public-report-title" class="text-lg font-bold hud-title"><i class="fa-solid fa-file-circle-check text-amber-300"></i> Mural de Transparência — Laudos do Instituto de Pesquisas</h2>
+<span class="badge">Autoria: Cientistas</span>
+</div>
+<div id="public-report-list" class="grid gap-3 sm:grid-cols-2">
+{% for report in public_reports %}
+<article class="public-report-card rounded-xl border border-cyan-800 bg-[#0a1728] p-3" data-report-id="{{ report.id }}">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-bold text-cyan-100">{{ report.title }}</h3>
+<span class="text-xs text-slate-400 whitespace-nowrap">{{ report.timestamp }}</span>
+</div>
+<p class="text-sm text-slate-300 mt-2">{{ report.conclusion }}</p>
+<p class="text-xs text-amber-200 mt-2">Publicado por: {{ report.author }}</p>
+</article>
+{% else %}
+<p id="public-report-empty" class="text-sm text-slate-400">Ainda não há laudos públicos. Quando os Cientistas salvarem um laudo, ele aparecerá aqui.</p>
+{% endfor %}
+</div>
+</section>
+{% endblock %}

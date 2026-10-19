@@ -1,0 +1,24 @@
+<section class="ai-tutor" data-endpoint="{{ url_for('chat.tutor_chat') }}" data-role="{{ current_role }}" aria-label="Tutor de IA">
+<button type="button" class="ai-tutor-launcher" aria-expanded="false" aria-controls="ai-tutor-panel" aria-label="Abrir tutor de IA">
+<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=Tutor" alt="" class="ai-tutor-avatar">
+<span>Tutor</span>
+</button>
+<div id="ai-tutor-panel" class="ai-tutor-panel" hidden>
+<header class="ai-tutor-header">
+<div class="flex items-center gap-2">
+<img src="https://api.dicebear.com/9.x/pixel-art/svg?seed=Tutor" alt="" class="ai-tutor-avatar">
+<div><b>Tutor Carbópolis</b><p class="text-xs text-slate-300">Assistente do seu grupo</p></div>
+</div>
+<button type="button" class="ai-chat-close" aria-label="Fechar tutor">×</button>
+</header>
+<div class="ai-tutor-messages" aria-live="polite" aria-relevant="additions text">
+<p class="ai-chat-message assistant">Olá! Sou o seu Tutor. Como posso ajudar o nosso grupo hoje?</p>
+</div>
+<form class="ai-tutor-form">
+<label class="sr-only" for="ai-tutor-input">Sua pergunta</label>
+<textarea id="ai-tutor-input" rows="4" maxlength="1500" placeholder="Digite sua pergunta..." required></textarea>
+<button type="submit" aria-label="Enviar pergunta"><i class="fa-solid fa-paper-plane"></i></button>
+</form>
+<p class="px-3 pb-2 text-xs text-slate-400">Respostas do Google Gemini podem conter imprecisões. Não envie dados pessoais.</p>
+</div>
+</section>

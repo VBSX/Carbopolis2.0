@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% from "components/lab_sample.html" import render_lab_sample %}
+{% block title %}Laboratório — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-flask text-cyan-300"></i> {{ intro.title }}</h1>
+<p class="text-sm text-slate-400 mb-3">{{ intro.body_text }}</p>
+{% if intro.image_url %}<img src="{{ intro.image_url }}" alt="{{ intro.title }}" class="w-full max-h-72 object-cover rounded-xl mb-3" onerror="this.classList.add('hidden')">{% endif %}
+<div class="hud-panel p-3 sm:p-4 mb-4 border border-amber-400/40">
+<h2 class="font-bold text-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> Estudo de Impacto Ambiental — cenários preditivos</h2>
+<p class="text-sm text-slate-200 mt-1">Realize testes preditivos e simulações baseadas nos Estudos de Impacto Ambiental (EIA) submetidos pelas empresas para prever o que acontecerá com Ivaí dos Campos se os projetos forem aprovados.</p>
+<p class="text-xs text-slate-400 mt-2">TermoBR e HydroSul ainda são propostas em avaliação. Os resultados das bancadas serão projeções didáticas, não medições de usinas ou impactos que já existam.</p>
+</div>
+
+<!-- ===== BANCADA 1: ÁGUA ===== -->
+<section class="hud-panel p-3 sm:p-4 mb-4">
+<div class="hud-panel p-3 mb-3" style="border-color:#38bdf866">
+<h2 class="font-bold"><i class="fa-solid fa-book-open text-sky-300"></i> Guia do Cientista — Projeção da Água</h2>
+<p class="text-sm text-slate-300 mt-1">Modele cenários para o Rio Ivaí comparando a condição atual com a possível alteração da água caso a proposta TermoBR seja aprovada.</p>
+<ol class="text-sm text-slate-300 list-decimal ml-5 mt-1">
+<li>Escolha o cenário de água a analisar; os valores serão simulados, não coletados no local.</li>
+<li>Toque em <b>💧 Pipetar indicador</b> para iniciar o teste preditivo de pH.</li>
+<li>Observe a cor do tubo: <b class="text-red-300">vermelho/laranja = ácida</b>, <b class="text-green-300">verde = normal</b>, <b class="text-sky-300">azul = básica</b>.</li>
+<li>Leia o pH projetado e estime o Oxigênio Dissolvido (OD) para a temperatura informada.</li>
+<li>Toque em <b>Salvar Laudo</b> para registrar a projeção no Dossiê.</li>
+</ol>
+</div>
+<h2 class="font-bold text-lg mb-2">🧪 Bancada 1 — Modelagem da Água do Rio Ivaí</h2>
+<div class="flex items-center gap-2 mb-3" id="wSteps">
+<span class="stepdot on" data-s="1">1</span><span class="flex-1 h-0.5 bg-[#1e3a5f]"></span>
+<span class="stepdot" data-s="2">2</span><span class="flex-1 h-0.5 bg-[#1e3a5f]"></span>
+<span class="stepdot" data-s="3">3</span><span class="flex-1 h-0.5 bg-[#1e3a5f]"></span>
+<span class="stepdot" data-s="4">4</span><span class="flex-1 h-0.5 bg-[#1e3a5f]"></span>
+<span class="stepdot" data-s="5">5</span>
+</div>
+<label class="text-sm font-bold">PASSO 1 — Cenário de água</label>
+<select id="wSite" class="input-hud mb-3">
+<option value="6.8">🌊 Rio Ivaí (Cenário Atual - Água Limpa)</option>
+<option value="4.5">🏭 Projeção EIA: Efluentes de Resfriamento (Projeto TermoBR)</option>
+<option value="5.5">🌾 Rio Ivaí — cenário de referência na zona agrícola</option>
+</select>
+<div class="grid sm:grid-cols-2 gap-3">
+<div class="text-center">
+<label class="text-sm font-bold">PASSO 2 — Pipetar reativo</label>
+<div class="drop" id="wDrop"></div>
+<div class="tube" id="wTube"><div class="tube-liquid" id="wLiquid" style="height:55%;background:#38bdf8"></div></div>
+<button onclick="waterStep2()" class="btn-hud btn-blue mt-2">💧 Pipetar indicador</button>
+</div>
+<div>
+<label class="text-sm font-bold">PASSO 3/4 — Reação + leitura</label>
+<div id="wResult" class="hud-panel p-3 text-sm min-h-[90px]">Toque em <b>Pipetar</b> para iniciar a reação…</div>
+<div class="flex items-center gap-1 mt-2 text-xs font-mono2">
+<span style="background:#E53935" class="px-1 rounded">0-3</span><span style="background:#FB8C00" class="px-1 rounded">3-5</span><span style="background:#FDD835;color:#000" class="px-1 rounded">5-6.5</span><span style="background:#7ED6A0;color:#000" class="px-1 rounded">6.5-7.5</span><span style="background:#29B6F6" class="px-1 rounded">7.5-9</span><span style="background:#5C6BC0" class="px-1 rounded">9+</span>
+</div>
+<label class="text-sm font-bold block mt-2">Temperatura hipotética da água (°C)</label>
+<input id="wTemp" type="number" value="22" class="input-hud">
+<button onclick="waterStep4()" class="btn-hud btn-gold mt-2">🌡️ Estimar OD</button>
+<div id="wOD" class="text-sm mt-1 text-amber-200"></div>
+</div>
+</div>
+</section>
+<!-- ===== BANCADA 2: AR ===== -->
+<section class="hud-panel p-3 sm:p-4 mb-4">
+<div class="hud-panel p-3 mb-3" style="border-color:#a78bfa66">
+<h2 class="font-bold"><i class="fa-solid fa-book-open text-violet-300"></i> Guia do Cientista — Projeção das Emissões</h2>
+<p class="text-sm text-slate-300 mt-1">Compare cenários hipotéticos de emissões que poderiam ocorrer se a proposta TermoBR fosse aprovada; nenhum valor representa emissão medida em uma usina de Ivaí dos Campos.</p>
+<ol class="text-sm text-slate-300 list-decimal ml-5 mt-1">
+<li>Escolha um cenário de emissões previsto para a proposta.</li>
+<li>Toque em <b>⚗️ Simular análise</b> para calcular a projeção didática.</li>
+<li>Observe o medidor de referência: verde = faixa de referência; vermelho = cenário de atenção.</li>
+<li>Registre a projeção no Dossiê.</li>
+</ol>
+</div>
+<h2 class="font-bold text-lg mb-2">🌬️ Bancada 2 — Modelagem das Emissões Atmosféricas</h2>
+<p class="text-sm text-slate-300 mb-3"><b>NO<sub>x</sub></b> é o nome dado a vários óxidos de nitrogênio, como NO e NO<sub>2</sub>, produzidos principalmente na combustão. Eles podem irritar as vias respiratórias e contribuir para a formação de ozônio e chuva ácida. O “x” indica diferentes compostos, não uma quantidade fixa de oxigênio.</p>
+<label class="text-sm font-bold">PASSO 1 — Cenário de emissões</label>
+<select id="aSite" class="input-hud mb-3" onchange="airPreset()">
+<option value="45|55|68">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, gás) — SO₂ 45 · NOₓ 55 · CO₂ 68 ppm</option>
+<option value="180|125|98">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, carvão) — SO₂ 180 · NOₓ 125 · CO₂ 98 ppm</option>
+<option value="12|15|30">🌾 Cenário de referência: ar da zona agrícola — SO₂ 12 · NOₓ 15 · CO₂ 30 ppm</option>
+</select>
+<div class="grid sm:grid-cols-2 gap-3">
+<div>
+<div class="grid grid-cols-3 gap-2">
+<label class="text-xs">SO<sub>2</sub><input id="aSO2" type="number" value="45" class="input-hud"></label>
+<label class="text-xs">NO<sub>x</sub><input id="aNOx" type="number" value="55" class="input-hud"></label>
+<label class="text-xs">CO<sub>2</sub><input id="aCO2" type="number" value="68" class="input-hud"></label>
+</div>
+<button onclick="airStep2()" class="btn-hud btn-blue mt-2">⚗️ Simular análise</button>
+<div id="aResult" class="hud-panel p-3 text-sm mt-2 min-h-[70px]">Aguardando a simulação…</div>
+</div>
+<div class="text-center">
+<label class="text-sm font-bold">Projeção de SO<sub>2</sub> (ppm)</label>
+<svg class="gauge" viewBox="0 0 200 110"><path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#1e3a5f" stroke-width="14"/><path id="aArc" d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#22ffaa" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="200"/><line id="aNeedle" x1="100" y1="100" x2="100" y2="30" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" transform="rotate(-70 100 100)"/><circle cx="100" cy="100" r="8" fill="#fbbf24"/></svg>
+<div id="aGaugeVal" class="font-mono2 font-bold">45 ppm projetados</div>
+</div>
+</div>
+</section>
+
+<!-- ===== PASSO 5: SALVAR ===== -->
+<section class="hud-panel p-3 sm:p-4 mb-4">
+<h2 class="font-bold text-lg mb-2">💾 PASSO 5 — Salvar Laudo no Dossiê</h2>
+<form method="POST" class="grid sm:grid-cols-3 gap-2">
+<input type="hidden" name="sample_type" id="fType" value="water">
+<input name="ph_value" id="fPH" placeholder="pH" class="input-hud">
+<input name="temp_celsius" id="fTemp" placeholder="Temp °C" class="input-hud">
+<input name="od_value" id="fOD" placeholder="OD mg/L" class="input-hud">
+<input name="so2_ppm" id="fSO2" placeholder="SO₂ (ppm)" class="input-hud">
+<input name="nox_ppm" id="fNOx" placeholder="NOₓ (ppm)" class="input-hud">
+<input name="co2_ppm" id="fCO2" placeholder="CO₂ (ppm)" class="input-hud">
+<input name="notes" id="fNotes" placeholder="Observações" class="input-hud sm:col-span-2">
+<label class="text-sm flex items-center gap-2"><input type="checkbox" name="saved_to_dossier" checked class="w-6 h-6"> Salvar no Dossiê Final</label>
+<button class="btn-hud sm:col-span-3"><i class="fa-solid fa-floppy-disk"></i> Salvar Laudo no Dossiê</button>
+</form>
+<p class="text-xs text-slate-400 mt-2">Dica: os valores medidos nas bancadas preenchem o formulário automaticamente. <button type="button" onclick="fillForm()" class="underline text-emerald-300">Usar última medição ⤴</button></p>
+</section>
+
+<div class="hud-panel p-3 sm:p-4 mb-4">
+<h2 class="font-bold"><i class="fa-solid fa-vial"></i> Minhas amostras</h2>
+{% for s in samples %}{{ render_lab_sample(s, show_dossier_badge=true) }}{% else %}<p class="text-sm text-slate-400">Nenhuma amostra registrada.</p>{% endfor %}
+<h2 class="font-bold mt-3"><i class="fa-solid fa-share-nodes"></i> Laudos disponíveis para consulta</h2>
+{% for s in released %}{{ render_lab_sample(s) }}{% else %}<p class="text-sm text-slate-400">Nenhum laudo disponível para consulta.</p>{% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/lab.js') }}"></script>{% endblock %}

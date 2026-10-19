@@ -1,0 +1,42 @@
+/* ===== CARBOPOLIS 2.0 — Game HUD / Cyber-Eco ===== */
+:root{
+  --hud-bg:#060d1a; --hud-panel:#0c1830; --hud-line:#1e3a5f;
+  --neon:#22ffaa; --neon2:#38bdf8; --gold:#fbbf24; --danger:#f87171;
+}
+body.hud{background:radial-gradient(1200px 600px at 50% -10%,#0e2547 0%,var(--hud-bg) 60%);color:#e2e8f0;font-family:'Rajdhani','Inter',system-ui,sans-serif;min-height:100dvh}
+.font-mono2{font-family:'Roboto Mono',monospace}
+.hud-panel{background:linear-gradient(180deg,#0d1c36,#0a1428);border:1px solid var(--hud-line);border-radius:1rem;box-shadow:0 0 0 1px #00000088,0 0 24px #22ffaa22,inset 0 1px 0 #ffffff14}
+.hud-title{text-shadow:0 0 18px #22ffaa66;letter-spacing:.04em}
+.badge{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:999px;font-size:.75rem;border:1px solid var(--hud-line);background:#0b1a33}
+.badge-neon{border-color:#22ffaa88;color:#a7f3d0;box-shadow:0 0 12px #22ffaa33}
+.badge-gold{border-color:#fbbf2488;color:#fde68a}
+.btn-hud{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.8rem 1.1rem;border-radius:.9rem;font-weight:700;border:1px solid #22ffaa66;background:linear-gradient(180deg,#0f5132,#0b3b26);color:#ecfdf5;box-shadow:0 0 16px #22ffaa44;width:100%}
+.btn-hud:active{transform:scale(.98)}
+.btn-blue{background:linear-gradient(180deg,#1d4ed8,#1e3a8a);border-color:#60a5fa66;box-shadow:0 0 16px #3b82f644}
+.btn-gold{background:linear-gradient(180deg,#92400e,#78350f);border-color:#fbbf2466;color:#fef3c7}
+.btn-emerald{background:linear-gradient(180deg,#059669,#064e3b);border-color:#34d39966;color:#d1fae5;box-shadow:0 0 16px #10b98144}
+.btn-rose{background:linear-gradient(180deg,#be123c,#9f1239);border-color:#fb718566;color:#ffe4e6;box-shadow:0 0 16px #f43f5e44}
+.btn-ghost{background:#0b1a33;border-color:var(--hud-line);color:#cbd5e1;box-shadow:none}
+.input-hud{background:#060f22;border:1px solid var(--hud-line);border-radius:.75rem;color:#e2e8f0;min-height:48px;padding:.7rem .9rem;width:100%}
+textarea.input-hud{min-height:120px}
+.bar{height:.7rem;border-radius:999px;background:#0a1730;border:1px solid var(--hud-line);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--neon),var(--neon2));box-shadow:0 0 10px #22ffaa88;transition:width .5s}
+.bottombar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#081426f2;border-top:1px solid var(--hud-line);backdrop-filter:blur(8px);padding:.4rem .4rem calc(.4rem + env(safe-area-inset-bottom))}
+.bottombar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:#94a3b8;min-height:56px;justify-content:center;border-radius:.7rem;flex:1}
+.bottombar a.active,.bottombar a:hover{color:var(--neon);background:#22ffaa14}
+.content-pad{padding-bottom:96px}
+.tube{width:90px;height:220px;border:3px solid #7dd3fc;border-top:none;border-radius:0 0 2rem 2rem;margin:0 auto;position:relative;overflow:hidden;background:#0a173055}
+.tube-liquid{position:absolute;bottom:0;left:0;right:0;transition:height 1s,background 1s}
+.drop{width:10px;height:22px;background:#38bdf8;border-radius:50% 50% 60% 60%;margin:2px auto;opacity:0;transition:opacity .3s,transform .6s}
+.drop.fall{opacity:1;transform:translateY(120px)}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.shake{animation:shake .4s ease 2}
+.gauge{width:100%;max-width:280px;margin:0 auto}
+.stepdot{width:34px;height:34px;border-radius:999px;display:flex;align-items:center;justify-content:center;border:2px solid var(--hud-line);background:#0b1a33;font-weight:800}
+.stepdot.on{border-color:var(--neon);color:#04120c;background:var(--neon);box-shadow:0 0 14px #22ffaa88}
+.quest{border-left:4px solid var(--neon)}
+.quest.done{border-color:var(--gold)}
+.poi-card{transition:transform .15s}
+.poi-card:active{transform:scale(.98)}
+@media print{.bottombar,.topnav,.no-print{display:none!important}body.hud{background:#fff;color:#000}}
+

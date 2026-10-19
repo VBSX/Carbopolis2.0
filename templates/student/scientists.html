@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Instituto de Pesquisas Científicas — Carbopolis{% endblock %}
+{% block content %}
+<h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-microscope text-cyan-300"></i> INSTITUTO DE PESQUISAS CIENTÍFICAS</h1>
+<p class="text-sm text-slate-400 mb-4">O Instituto estará modelando os possíveis efeitos das propostas TermoBR e HydroSul antes da decisão do Comitê de Avaliação. Consulte referências técnicas e use a bancada virtual para comparar projeções, não medições locais.</p>
+
+<!-- Notícias e Documentos Científicos -->
+<div class="hud-panel p-4 mb-4">
+  <h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-newspaper text-cyan-300"></i> Notícias e Documentos Científicos</h2>
+  <p class="text-xs text-slate-400 mb-3">Abra em nova aba para ler matérias e estudos técnicos.</p>
+  <div class="grid sm:grid-cols-2 gap-3 mb-4">
+    <div class="hud-panel p-3 border-[#f8717133]">
+      <h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Termelétrica — Crescimento de Emissões GEE</h3>
+      <a href="https://energiaeambiente.org.br/emissoes-de-gases-de-efeito-estufa-de-usinas-termeletricas-cresceram-75-20221215" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+    </div>
+    <div class="hud-panel p-3 border-[#f8717133]">
+      <h3 class="flex items-center gap-2 text-red-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> 👎 Hidrelétrica — Mortandade de Peixes</h3>
+      <a href="https://agenciabrasil.ebc.com.br/geral/noticia/2021-07/estudo-relaciona-mortandade-de-peixes-operacoes-de-hidreletricas" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ler notícia</a>
+    </div>
+    <div class="hud-panel p-3 border-[#38bdf833]">
+      <h3 class="flex items-center gap-2 text-cyan-300 font-bold mb-2"><i class="fa-solid fa-file-pdf"></i> 📄 Livro Técnico — Geração Hidroelétrica e Eolioelétrica</h3>
+      <a href="https://imprensa.ufc.br/wp-content/uploads/2021/07/2019-geracao-hidroeletrica-e-eolioeletrica.pdf" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar PDF</a>
+    </div>
+    <div class="hud-panel p-3 border-[#38bdf833]">
+      <h3 class="flex items-center gap-2 text-cyan-300 font-bold mb-2"><i class="fa-solid fa-file-pdf"></i> 📄 TCC — Estudo Técnico de Termelétricas</h3>
+      <a href="https://dspace.sti.ufcg.edu.br/bitstream/riufcg/18069/1/DAYANNE%20ROCHA%20BARBOSA%20-%20TCC%20ENG.%20EL%C3%89TRICA%202010.pdf" target="_blank" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Acessar PDF</a>
+    </div>
+  </div>
+</div>
+
+<!-- Bancada do Laboratório Virtual -->
+<div class="hud-panel p-4 mb-4">
+  <h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-flask text-cyan-300"></i> Bancada de Modelagem do Laboratório Virtual</h2>
+  <p class="text-xs text-slate-400 mb-3">Acesso exclusivo ao grupo de Cientistas para simular pH, Oxigênio Dissolvido e cenários de emissões SO₂/NOₓ/CO₂ previstos nos estudos das propostas.</p>
+  <a href="{{ url_for('student.lab_view') }}" class="btn-hud btn-emerald w-full text-left text-sm sm:text-base"><i class="fa-solid fa-flask"></i> Abrir Modelagem</a>
+</div>
+
+<!-- Modais Científicos -->
+<div class="hud-panel p-4">
+  <h2 class="font-bold text-slate-200 mb-3 flex items-center gap-2"><i class="fa-solid fa-circle-info text-cyan-300"></i> Modais de Análise Científica</h2>
+  <p class="text-xs text-slate-400 mb-4">Clique nos botões abaixo para abrir cada análise detalhada.</p>
+  <div class="grid sm:grid-cols-2 gap-3 mb-4">
+    <button onclick="openModal('modal-scientists-hidro-positivo')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-thumbs-up"></i> Pontos Positivos: Hidroelétrica</button>
+    <button onclick="openModal('modal-scientists-hidro-negativo')" class="btn-hud btn-rose w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-thumbs-down"></i> Pontos Negativos: Hidroelétrica</button>
+    <button onclick="openModal('modal-scientists-hidro-processo')" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-lightbulb"></i> Processos Científicos: Hidroelétrica</button>
+    <button onclick="openModal('modal-scientists-termo-positivo')" class="btn-hud btn-emerald w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-thumbs-up"></i> Pontos Positivos: Termelétrica</button>
+    <button onclick="openModal('modal-scientists-termo-negativo')" class="btn-hud btn-rose w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-thumbs-down"></i> Pontos Negativos: Termelétrica</button>
+    <button onclick="openModal('modal-scientists-termo-quimica')" class="btn-hud btn-blue w-full text-left text-xs sm:text-sm"><i class="fa-solid fa-flask"></i> Reações: Combustão Termelétrica</button>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<style>
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,8,20,.85);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s,visibility 0s linear .25s}
+.modal-backdrop.visible{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s}
+.modal-card{max-width:640px;width:100%;max-height:90vh;overflow-y:auto;border-radius:1rem;background:linear-gradient(180deg,#0d1c36,#0a1428);border:1px solid #1e3a5f;box-shadow:0 0 40px rgba(0,0,0,.6)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-bottom:1px solid #1e3a5f}
+.modal-header h3{font-size:1.1rem;margin:0;color:#e2e8f0}
+.close-btn{background:#1e3a5f;border:none;border-radius:50%;width:32px;height:32px;color:#cbd5e1;cursor:pointer;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+.close-btn:hover{background:#38bdf8;color:#0b1a33}
+.modal-body{padding:1.25rem}
+.modal-body h4{font-size:1rem;color:#38bdf8;margin-top:1rem;margin-bottom:.5rem;border-bottom:1px solid #1e3a5f;padding-bottom:.25rem}
+.modal-body h4:first-child{margin-top:0}
+.modal-body ul{list-style:disc;margin-left:1.25rem;margin-bottom:.75rem}
+.modal-body li{margin-bottom:.35rem;color:#e2e8f0;line-height:1.5}
+.modal-body p{color:#cbd5e1;line-height:1.6;margin-bottom:.75rem}
+.reaction{padding:.75rem;border:1px solid #1e3a5f;border-radius:.75rem;background:#0b1a33}
+@media (max-width:640px){.modal-card{margin:.5rem}}
+</style>
+<!-- Modal 1: Pontos Positivos: Hidroelétrica -->
+<div id="modal-scientists-hidro-positivo" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-scientists-hidro-positivo')">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-header"><h3 class="font-bold hud-title">👍 Pontos Positivos: Hidroelétrica</h3><button class="close-btn" onclick="closeModal('modal-scientists-hidro-positivo')" aria-label="Fechar">✕</button></div>
+    <div class="modal-body">
+      <ul>
+        <li><b>Alta Eficiência Mecânica:</b> apresenta rendimento de conversão de energia cinética em elétrica entre 90% e 92%, superando os limites das térmicas.</li>
+        <li><b>Zero Emissão de Combustão:</b> não realiza reações químicas de queima, operando sem lançar CO₂, SO₂ ou fuligem diretamente na atmosfera durante a geração.</li>
+        <li><b>Matriz Renovável e Armazenamento:</b> utiliza a energia potencial gravitacional da água, permitindo armazenar energia no reservatório sem perda química do recurso.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- Modal 2: Pontos Negativos: Hidroelétrica -->
+<div id="modal-scientists-hidro-negativo" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-scientists-hidro-negativo')">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-header"><h3 class="font-bold hud-title">👎 Pontos Negativos: Hidroelétrica</h3><button class="close-btn" onclick="closeModal('modal-scientists-hidro-negativo')" aria-label="Fechar">✕</button></div>
+    <div class="modal-body">
+      <ul>
+        <li><b>Decomposição Orgânica (Metano):</b> a inundação de biomassa vegetal gera decomposição anaeróbica, liberando gás metano, um potente gás de efeito estufa, nos primeiros anos.</li>
+        <li><b>Estratificação e Oxigenação:</b> a formação do reservatório altera a dinâmica físico-química da água, criando camadas com variação de temperatura e redução de oxigênio dissolvido no fundo.</li>
+        <li><b>Bloqueio de Sedimentos e Biota:</b> o represamento interrompe o fluxo natural de sedimentos e nutrientes rio abaixo, além de barrar as rotas migratórias e reprodutivas da fauna aquática.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- Modal 3: Processos possíveis em uma usina hidrelétrica -->
+<div id="modal-scientists-hidro-processo" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-scientists-hidro-processo')">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-header"><h3 class="font-bold hud-title">💡 Processos possíveis em uma usina hidrelétrica</h3><button class="close-btn" onclick="closeModal('modal-scientists-hidro-processo')" aria-label="Fechar">✕</button></div>
+    <div class="modal-body">
+      <p>Se a proposta fosse aprovada e construída, a usina poderia aproveitar a água represada, que armazenaria <b>energia potencial</b>. Ao abrir as comportas, a água desceria em alta velocidade (<b>energia cinética</b>) e moveria as pás da turbina (<b>energia mecânica</b>). Esse movimento poderia girar ímãs dentro do gerador que, por <b>indução eletromagnética</b>, colocariam os elétrons em movimento e transformariam a força da água em <b>energia elétrica</b>.</p>
+    </div>
+  </div>
+</div>
+<!-- Modal 4: Pontos Positivos: Termelétrica -->
+<div id="modal-scientists-termo-positivo" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-scientists-termo-positivo')">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-header"><h3 class="font-bold hud-title">👍 Pontos Positivos: Termelétrica</h3><button class="close-btn" onclick="closeModal('modal-scientists-termo-positivo')" aria-label="Fechar">✕</button></div>
+    <div class="modal-body">
+      <ul>
+        <li><b>Independência Climática:</b> o processo termodinâmico opera de forma contínua e previsível, sem oscilações causadas por períodos de seca no ciclo hidrológico.</li>
+        <li><b>Preservação Ecossistêmica Terrestre:</b> exige uma área geográfica consideravelmente menor, evitando a alteração drástica de biomas terrestres e áreas agrícolas por alagamento.</li>
+        <li><b>Evolução de Ciclo Combinado:</b> quando movida a gás natural em ciclo combinado, atinge até 60% de eficiência e emite menos da metade do CO₂ comparado ao carvão.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- Modal 5: Pontos Negativos: Termelétrica -->
+<div id="modal-scientists-termo-negativo" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-scientists-termo-negativo')">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-header"><h3 class="font-bold hud-title">👎 Pontos Negativos: Termelétrica</h3><button class="close-btn" onclick="closeModal('modal-scientists-termo-negativo')" aria-label="Fechar">✕</button></div>
+    <div class="modal-body">
+      <ul>
+        <li><b>Limite Termodinâmico:</b> grande parte da energia química do combustível é perdida sob a forma de calor dissipado, resultando em menor eficiência global (35% a 60%).</li>
+        <li><b>Emissão de Poluentes Atmosféricos:</b> a combustão (especialmente incompleta) libera CO₂, monóxido de carbono CO, óxidos de enxofre e nitrogênio e material particulado.</li>
+        <li><b>Impacto da Poluição Térmica Hídrica:</b> a devolução da água utilizada no resfriamento eleva a temperatura do rio, o que reduz fisicamente a solubilidade do Oxigênio Dissolvido na água.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!-- Modal 6: Reações da Usina Termelétrica (Química da Combustão) -->
+<div id="modal-scientists-termo-quimica" class="modal-backdrop" onclick="if(event.target===this)closeModal('modal-scientists-termo-quimica')">
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-header"><h3 class="font-bold hud-title">🧪 Reações da Usina Termelétrica — Química da Combustão</h3><button class="close-btn" onclick="closeModal('modal-scientists-termo-quimica')" aria-label="Fechar">✕</button></div>
+    <div class="modal-body">
+      <div class="reaction">
+        <h4>Combustão Completa</h4>
+        <p class="font-mono2 text-sm mb-1">CH₄ + 2O₂ → CO₂ + 2H₂O</p>
+        <p class="text-xs text-slate-400">Gera muito calor e gás presente no efeito estufa (dióxido de carbono).</p>
+      </div>
+      <div class="reaction mt-3">
+        <h4>Combustão Incompleta</h4>
+        <p class="font-mono2 text-sm mb-1">2CH₄ + 3O₂ → 2CO + 4H₂O</p>
+        <p class="text-xs text-slate-400">Gera monóxido de carbono e fuligem.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function openModal(id){const modal=document.getElementById(id);if(!modal)return;modal.classList.add('visible');document.body.style.overflow='hidden';}
+function closeModal(id){const modal=document.getElementById(id);if(!modal)return;modal.classList.remove('visible');document.body.style.overflow='';}
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){document.querySelectorAll('.modal-backdrop.visible').forEach(modal=>modal.classList.remove('visible'));document.body.style.overflow='';}});
+</script>
+{% endblock %}
