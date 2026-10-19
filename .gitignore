@@ -11,3 +11,6 @@ __pycache__/
 htmlcov/
 instance/
 static/uploads/
+package-lock.json
+package.json
+skills-lock.json
