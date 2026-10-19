@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: carbopolis-2
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TERMOBR_PASSWORD
+        generateValue: true
+      - key: HYDROSUL_PASSWORD
+        generateValue: true
+      - key: COMUNIDADE_PASSWORD
+        generateValue: true
+      - key: CIENTISTAS_PASSWORD
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true

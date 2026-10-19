@@ -24,7 +24,7 @@ from app import create_app
 from extensions import db
 from helpers.gemini import GeminiUnavailableError, generate_reply
 from helpers.personas import NPC_PERSONAS, TUTOR_GLOBAL_INSTRUCTION, tutor_instruction_for
-from seed import CONTENTS, TASKS
+from seed import CONTENTS, TASKS, password_for_role
 from models import (
     ContentBlock,
     InterviewLog,
@@ -400,6 +400,20 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertIn(b"Rio Iva\xc3\xad (Cen\xc3\xa1rio Atual - \xc3\x81gua Limpa)", lab_page.data)
         self.assertIn(b"Proje\xc3\xa7\xc3\xa3o EIA: Efluentes de Resfriamento (Projeto TermoBR)", lab_page.data)
         self.assertIn(b"Proje\xc3\xa7\xc3\xa3o EIA: Emiss\xc3\xb5es Atmosf\xc3\xa9ricas (Projeto TermoBR", lab_page.data)
+
+    def test_seed_requires_configured_group_passwords_in_production(self):
+        with patch.dict(
+            os.environ,
+            {"APP_ENV": "production", "TERMOBR_PASSWORD": "generated-secret"},
+        ):
+            self.assertEqual(password_for_role("termobr", "termo"), "generated-secret")
+
+        with patch.dict(os.environ, {"APP_ENV": "production"}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "TERMOBR_PASSWORD"):
+                password_for_role("termobr", "termo")
+
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(password_for_role("termobr", "termo"), "termo")
 
     def test_seed_content_and_missions_use_preapproval_context(self):
         contents = {section: (title, body, button, hint) for section, title, body, button, hint in CONTENTS}

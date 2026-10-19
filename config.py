@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = BASE_DIR.parent.parent
-load_dotenv(ROOT_DIR / ".env.local", override=True)
-load_dotenv(BASE_DIR / ".env", override=False)
+if os.getenv("APP_ENV") != "production":
+    load_dotenv(ROOT_DIR / ".env.local", override=True)
+    load_dotenv(BASE_DIR / ".env", override=False)
 
 DEFAULT_GEMINI_MODEL = "gemini-3.8-flash"
 DEFAULT_GEMINI_FALLBACK_MODEL = "gemini-3.5-flash-lite"
@@ -60,4 +61,6 @@ class Config:
     }
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
     REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SECURE = SESSION_COOKIE_SECURE
