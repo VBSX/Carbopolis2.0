@@ -38,11 +38,10 @@ function airStep2(){
   lastAir={so2:s,nox:n,co2:c,origem:document.getElementById('aSite').selectedOptions[0].dataset.origin};fillForm();
 }
 function fillForm(){
-  const select=document.getElementById('fTesteOrigem');
   const origens = new Set([lastWater.origem, lastAir.origem].filter(Boolean));
-  Array.from(select.options).forEach(option => {
-    option.selected = origens.has(option.value);
-  });
+  document.getElementById('fOrigemList').textContent = origens.size ? Array.from(origens).join(' + ') : 'nenhuma bancada realizada ainda.';
+  document.getElementById('fSave').disabled = !origens.size;
+  document.getElementById('fSaveHint').hidden = origens.size > 0;
   const originInputs = document.getElementById('fTesteOrigemInputs');
   originInputs.replaceChildren(...Array.from(origens, origem => {
     const input = document.createElement('input');
@@ -56,5 +55,4 @@ function fillForm(){
   if(lastWater.od!=null)document.getElementById('fOD').value=lastWater.od;
   if(lastAir.so2!=null){document.getElementById('fSO2').value=lastAir.so2;document.getElementById('fNOx').value=lastAir.nox;document.getElementById('fCO2').value=lastAir.co2;document.getElementById('fType').value=(lastWater.ph!=null&&lastAir.so2!=null)?'water':(lastAir.so2!=null?'air':'water');}
   if(lastWater.ph!=null&&(lastWater.ph<5.5))document.getElementById('fNotes').value='Cenário hipotético ácido — projeção didática para avaliação no EIA, não é amostra coletada.';
-  setStep('wSteps',5);
 }

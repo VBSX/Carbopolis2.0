@@ -97,38 +97,45 @@ def _public_lab_reports():
     )
     reports = []
     for sample in samples:
-        sample_name = "água" if sample.sample_type == "water" else "ar"
-        title = "Laudo de análise da água" if sample.sample_type == "water" else "Laudo de análise do ar"
-        measurements = []
-        for label, field, unit in (
-            ("pH", "ph_value", ""),
-            ("SO₂", "so2_ppm", " ppm"),
-            ("NOₓ", "nox_ppm", " ppm"),
-            ("CO₂", "co2_ppm", " ppm"),
-            ("Temperatura", "temp_celsius", " °C"),
-            ("Oxigênio dissolvido", "od_value", " mg/L"),
+        groups = []
+        temp_group = "Água" if sample.sample_type == "water" else "Ar"
+        for group, fields in (
+            ("Água", (("pH", "ph_value", ""), ("Oxigênio dissolvido", "od_value", " mg/L"))),
+            ("Ar", (("SO₂", "so2_ppm", " ppm"), ("NOₓ", "nox_ppm", " ppm"), ("CO₂", "co2_ppm", " ppm"))),
         ):
-            value = getattr(sample, field)
-            if value is not None:
-                measurements.append(f"{label}: {value:g}{unit}")
-        conclusion_parts = [sample.notes.strip()] if sample.notes and sample.notes.strip() else []
-        if measurements:
-            conclusion_parts.append("; ".join(measurements))
-        if not conclusion_parts:
-            conclusion_parts.append(f"Análise de {sample_name} registrada pelo Instituto de Pesquisas.")
-        conclusion = " — ".join(conclusion_parts)
-        conclusion_lines = [
-            part.strip()
-            for line in conclusion.splitlines()
-            for part in line.split(";")
-            if part.strip()
-        ]
+            if group == temp_group:
+                fields += (("Temperatura", "temp_celsius", " °C"),)
+            items = []
+            for label, field, unit in fields:
+                value = getattr(sample, field)
+                if value is None:
+                    continue
+                info = _interpret_value(field, value, sample.sample_type)
+                items.append({
+                    "label": label,
+                    "value": f"{value:g}{unit}",
+                    "alert": "ACIMA DO ACEITÁVEL" in info,
+                    "reference": info.split("Boa referência: ")[1].split(". Status")[0],
+                })
+            if items:
+                groups.append({"name": group, "items": items})
+        names = [g["name"] for g in groups] or ["Água" if sample.sample_type == "water" else "Ar"]
+        title = {
+            ("Água",): "Laudo de análise da água",
+            ("Ar",): "Laudo de análise do ar",
+        }.get(tuple(names), "Laudo de análise da água e do ar")
+        # Old notes mix the scientists' text with auto-generated interpretations; keep only the human part.
+        notes = (sample.notes or "").strip()
+        if any(m in notes for m in ("Status:", "Origem do teste:", "Sem valores numéricos")):
+            head = notes.split(" — ")[0] if " — " in notes else ""
+            notes = "" if any(m in head for m in ("Status:", "Origem do teste:")) else head.strip()
         reports.append(
             {
                 "id": sample.id,
                 "title": title,
-                "conclusion": conclusion,
-                "conclusion_lines": conclusion_lines,
+                "origin": [o.strip() for o in (sample.teste_origem or "").split("|") if o.strip()],
+                "groups": groups,
+                "notes": notes,
                 "timestamp": sample.created_at.strftime("%d/%m/%Y %H:%M"),
                 "author": "Cientistas",
             }

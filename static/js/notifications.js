@@ -45,18 +45,40 @@
     timestamp.textContent = report.timestamp;
     headingRow.append(title, timestamp);
 
-    const conclusion = document.createElement("ul");
-    conclusion.className = "mt-3 space-y-2";
-    for (const line of report.conclusion_lines) {
-      const item = document.createElement("li");
-      item.className = "rounded-lg border border-slate-700/60 bg-slate-900/50 px-3 py-2 text-sm text-slate-300";
-      item.textContent = line;
-      conclusion.append(item);
+    const el = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const body = [];
+    const origin = el("p", "report-origin mt-2");
+    origin.append(el("b", "", "Origem dos dados:"), ...(report.origin.length ? report.origin : ["Instituto de Pesquisas (projeção do EIA)"]).map(o => el("span", "block", `• ${o}`)));
+    body.push(origin);
+    for (const group of report.groups) {
+      body.push(el("h4", "report-group", group.name === "Água" ? "💧 Análise da água" : "🌫️ Análise do ar"));
+      const list = el("ul", "report-items");
+      for (const item of group.items) {
+        const row = el("li");
+        row.append(
+          el("span", "", item.label),
+          el("b", "", item.value),
+          el("em", item.alert ? "alert" : "ok", item.alert ? "⚠️ Acima" : "✓ Ok"),
+          el("small", "", `Ref.: ${item.reference}`)
+        );
+        list.append(row);
+      }
+      body.push(list);
+    }
+    if (report.notes) {
+      const notes = el("p", "report-notes");
+      notes.append(el("b", "", "Observações: "), report.notes);
+      body.push(notes);
     }
     const author = document.createElement("p");
     author.className = "text-xs text-amber-200 mt-2";
     author.textContent = `Publicado por: ${report.author}`;
-    card.append(headingRow, conclusion, author);
+    card.append(headingRow, ...body, author);
 
     const emptyMessage = document.getElementById("public-report-empty");
     if (emptyMessage) {

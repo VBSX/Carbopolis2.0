@@ -442,7 +442,7 @@ class CarbopolisApplicationTests(unittest.TestCase):
             ("hydrosul", "/student/hydrosul", "PROPOSTA DE USINA HIDRELÉTRICA"),
             ("comunidade", "/student/community", "Nenhuma das usinas existe"),
             ("cientistas", "/student/scientists", "possíveis efeitos das propostas"),
-            ("cientistas", "/student/lab", "testes preditivos e simulações"),
+            ("cientistas", "/student/lab", "projeções dos Estudos de Impacto Ambiental (EIA)"),
         ):
             with self.subTest(role=role_name, path=path):
                 response = self.get_as(role_name, path)
@@ -451,7 +451,7 @@ class CarbopolisApplicationTests(unittest.TestCase):
 
         lab_page = self.client.get("/student/lab")
         self.assertIn(
-            b"Realize testes preditivos e simula\xc3\xa7\xc3\xb5es baseadas nos Estudos de Impacto Ambiental (EIA) submetidos pelas empresas para prever o que acontecer\xc3\xa1 com Iva\xc3\xad dos Campos se os projetos forem aprovados.",
+            "as usinas ainda são propostas, então nada aqui é medição real".encode(),
             lab_page.data,
         )
         self.assertIn(b"Rio Iva\xc3\xad (Cen\xc3\xa1rio Atual - \xc3\x81gua Limpa)", lab_page.data)
@@ -581,12 +581,10 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertEqual(len(reports), 1)
         self.assertEqual(reports[0]["id"], published.id)
         self.assertEqual(reports[0]["title"], "Laudo de análise da água")
-        self.assertIn("Risco de chuva ácida detectado", reports[0]["conclusion"])
-        self.assertIn("pH: 4.5", reports[0]["conclusion"])
-        self.assertEqual(
-            reports[0]["conclusion_lines"],
-            ["Risco de chuva ácida detectado", "Observar a vegetação próxima", "pH: 4.5"],
-        )
+        self.assertEqual(reports[0]["notes"], "Risco de chuva ácida detectado\nObservar a vegetação próxima")
+        self.assertEqual(reports[0]["groups"][0]["name"], "Água")
+        self.assertEqual(reports[0]["groups"][0]["items"][0]["value"], "4.5")
+        self.assertTrue(reports[0]["groups"][0]["items"][0]["alert"])
         self.assertTrue(reports[0]["timestamp"])
         self.assertEqual(reports[0]["author"], "Cientistas")
         self.assertIsNotNone(published.created_at)
