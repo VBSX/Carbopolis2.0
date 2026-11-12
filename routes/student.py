@@ -16,6 +16,75 @@ def _pdf_escape(value):
     return escape(text)
 
 
+def _interpret_value(field, value, sample_type):
+    """Retorna (nome_amigavel, significado, status) para um campo de medição."""
+    thresholds = {
+        # Água
+        "ph_value": {
+            "nome": "pH",
+            "significado": "acidez/alcalinidade da água (7 = neutro; abaixo de 7 = ácido; acima de 7 = básico)",
+            "ruim": lambda v: v < 6.0 or v > 9.0,
+            "faixa_boa": "entre 6,0 e 9,0",
+        },
+        "od_value": {
+            "nome": "Oxigênio Dissolvido",
+            "significado": "quantidade de oxigênio disponível na água para peixes e organismos aquáticos (mg/L)",
+            "ruim": lambda v: v < 5.0,
+            "faixa_boa": "acima de 6,0 mg/L",
+        },
+        # Ar
+        "so2_ppm": {
+            "nome": "SO₂ (dióxido de enxofre)",
+            "significado": "gás liberado na queima de combustíveis fósseis; irrita vias respiratórias e causa chuva ácida",
+            "ruim": lambda v: v > 100.0,
+            "faixa_boa": "até 100 ppm",
+        },
+        "nox_ppm": {
+            "nome": "NOₓ (óxidos de nitrogênio)",
+            "significado": "gases formados na combustão em alta temperatura; irritam pulmões e contribuem para smog e chuva ácida",
+            "ruim": lambda v: v > 100.0,
+            "faixa_boa": "até 100 ppm",
+        },
+        "co2_ppm": {
+            "nome": "CO₂ (dióxido de carbono)",
+            "significado": "gás de efeito estufa emitido na queima de combustível fóssil; retém calor na atmosfera",
+            "ruim": lambda v: v > 100.0,
+            "faixa_boa": "até 100 ppm",
+        },
+        "temp_celsius": {
+            "nome": "Temperatura",
+            "significado": "temperatura da amostra (°C)",
+            "ruim": lambda v: v > 30.0 if sample_type == "water" else False,
+            "faixa_boa": "até 30 °C (água)",
+        },
+    }
+    info = thresholds.get(field)
+    if not info:
+        return None
+    nome = info["nome"]
+    significado = info["significado"]
+    faixa = info["faixa_boa"]
+    eh_ruim = info["ruim"](value)
+    status = "⚠️ ACIMA DO ACEITÁVEL" if eh_ruim else "dentro da faixa esperada"
+    return f"{nome} {value} — {significado}. Boa referência: {faixa}. Status: {status}."
+
+
+def _build_laudo_notes(measurements, sample_type, manual_notes, teste_origem=None):
+    """Constrói o texto do laudo com interpretação automática de cada valor medido."""
+    partes = []
+    if teste_origem and teste_origem.strip():
+        partes.append(f"Origem do teste: {teste_origem.strip()}.")
+    for field in ("ph_value", "temp_celsius", "od_value", "so2_ppm", "nox_ppm", "co2_ppm"):
+        value = measurements.get(field)
+        if value is None:
+            continue
+        partes.append(_interpret_value(field, value, sample_type))
+    corpo = "\n".join(partes) if partes else "Sem valores numéricos registrados."
+    if manual_notes and manual_notes.strip():
+        corpo = f"{manual_notes.strip()} — {corpo}"
+    return corpo
+
+
 def _public_lab_reports():
     from models import Role as _Role
 
@@ -107,8 +176,9 @@ def lab_view():
             role_id=_cu.role_id,
             sample_type=sample_type,
             **measurements,
-            notes=request.form.get("notes"),
+            notes=_build_laudo_notes(measurements, sample_type, request.form.get("notes"), request.form.get("teste_origem")),
             saved_to_dossier=bool(request.form.get("saved_to_dossier")),
+            teste_origem=request.form.get("teste_origem") or None,
         )
         _db.session.add(s); _db.session.commit()
         flash("Amostra registrada e salva no dossiê!" if s.saved_to_dossier else "Amostra registrada com sucesso!", "success")

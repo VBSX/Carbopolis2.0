@@ -4,6 +4,21 @@
 <h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-sliders text-amber-300"></i> {{ intro.title }}</h1>
 <p class="text-sm text-slate-400 mb-3">{{ intro.body_text }}</p>
 {% if intro.image_url %}<img src="{{ intro.image_url }}" alt="{{ intro.title }}" class="w-full max-h-72 object-cover rounded-xl mb-3" onerror="this.classList.add('hidden')">{% endif %}
+<details class="hud-panel p-3 sm:p-4 mb-3 text-sm text-slate-300">
+<summary class="font-bold cursor-pointer text-cyan-200"><i class="fa-solid fa-circle-question"></i> Como usar o simulador e ler o gráfico</summary>
+<div class="mt-2 space-y-2">
+<p><strong>1. Escolha a matriz energética:</strong> compare o cenário da proposta TermoBR (termelétrica) com o da HydroSul (hidrelétrica).</p>
+<ul class="list-disc ml-5 space-y-1">
+<li><strong>🧰 Filtros / lavadores de gases</strong> (TermoBR): reduziriam em 70% as emissões de SO₂ e NOₓ, melhorando o eixo Ambiental e a saúde (Social), mas aumentariam o custo (Econômico).</li>
+<li><strong>⛽ Combustível</strong> (TermoBR): o carvão emitiria muito mais poluentes que o gás natural, derrubando os eixos Ambiental e Social.</li>
+<li><strong>🐟 Escada de peixes</strong> (HydroSul): reduziria o impacto previsto sobre a fauna aquática (Ambiental), com custo adicional (Econômico).</li>
+<li><strong>🏠 Reassentamento justo</strong> (HydroSul): reduziria o número de famílias prejudicadas e os protestos (Social), mas custaria mais (Econômico).</li>
+<li><strong>🌊 Altura da barragem</strong> (HydroSul): quanto mais alta, mais energia geraria (Energético), porém maior seria a área alagada e o número de famílias desapropriadas (Ambiental e Social).</li>
+</ul>
+<p><strong>2. Clique em Simular</strong> e observe o gráfico de radar: cada eixo vai de 0 a 100 — quanto mais longe do centro, melhor o desempenho naquele aspecto. Um polígono grande e equilibrado indica um cenário com menos pontos fracos; um polígono "achatado" em um eixo revela o principal problema daquela configuração.</p>
+<p><strong>3. Compare cenários:</strong> refaça a simulação mudando uma opção por vez e anote como os eixos mudam. Use os resultados como evidência nas missões e no Júri Simulado — lembre-se de que são projeções, não medições reais.</p>
+</div>
+</details>
 <div class="grid md:grid-cols-2 gap-3">
 <div class="hud-panel p-3 sm:p-4">
 <label class="text-sm font-bold"><i class="fa-solid fa-bolt"></i> Matriz energética
@@ -26,7 +41,7 @@
 <label class="block mt-3 text-sm font-bold">🌊 Altura da barragem: <span id="damLabel" class="font-mono2 text-amber-300">40</span>m
 <input type="range" id="dam_height" min="10" max="100" value="40" class="w-full" style="min-height:48px"></label>
 </div>
-<button onclick="simulate()" class="btn-hud mt-3"><i class="fa-solid fa-play"></i> Simular impacto</button>
+<button onclick="simulate()" class="btn-hud mt-3"><i class="fa-solid fa-play"></i> Simular</button>
 <p class="text-xs text-slate-400 mt-2">Os valores calculados são estimativas do cenário escolhido, caso a proposta correspondente fosse aprovada.</p>
 <div id="simOut" class="text-sm mt-3"></div>
 </div>

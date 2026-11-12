@@ -1,11 +1,18 @@
 """Authenticated Gemini chat endpoints for RPG interviews and the role-based tutor."""
+import time
+
 from flask import Blueprint, current_app, jsonify, render_template, request
 from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
 
 from extensions import db
 from helpers.gemini import GeminiConfigurationError, GeminiUnavailableError, generate_reply
-from helpers.personas import NPC_PERSONAS, TUTOR_GLOBAL_INSTRUCTION, tutor_instruction_for
+from helpers.personas import (
+    NPC_PERSONAS,
+    SCOPE_GUARDRAIL,
+    TUTOR_GLOBAL_INSTRUCTION,
+    tutor_instruction_for,
+)
 from models import InterviewLog, SavedQuote
 from utils import STUDENT_ROLES, role_required
 
@@ -19,6 +26,25 @@ INTERVIEW_ROLE_LABELS = {
     "comunidade": "Comunidade de Ivaí dos Campos",
     "cientistas": "Cientistas Ambientais",
 }
+
+
+# shortcut: in-memory and per worker process; move to the database or Redis if the app runs several workers.
+_ai_calls = {}
+AI_MIN_INTERVAL_SECONDS = 4
+AI_MAX_CALLS_PER_HOUR = 60
+
+
+def _ai_rate_limited():
+    """Return an error message when this session is calling the AI too often."""
+    now = time.monotonic()
+    calls = [t for t in _ai_calls.get(current_user.id, []) if now - t < 3600]
+    if calls and now - calls[-1] < AI_MIN_INTERVAL_SECONDS:
+        return "Aguarde alguns segundos antes de enviar outra mensagem."
+    if len(calls) >= AI_MAX_CALLS_PER_HOUR:
+        return "Seu grupo atingiu o limite de mensagens por hora. Fale com o professor."
+    calls.append(now)
+    _ai_calls[current_user.id] = calls
+    return None
 
 
 def _request_message():
@@ -52,7 +78,7 @@ def _gemini_error_response(error):
     current_app.logger.warning("Gemini chat unavailable: %s", error)
     if isinstance(error, GeminiConfigurationError):
         return jsonify(
-            error="A IA não está configurada no servidor. Peça ao responsável para definir GEMINI_API_KEY."
+            error="A IA não está configurada no servidor. Peça ao responsável para definir GEMINI_API_KEY ou GROQ_API_KEY."
         ), 503
     return jsonify(error="A IA está indisponível no momento."), 503
 
@@ -103,6 +129,9 @@ def interview_chat():
     message, error = _request_message()
     if error:
         return jsonify(error=error), 400
+    limited = _ai_rate_limited()
+    if limited:
+        return jsonify(error=limited), 429
 
     previous_entries = (
         InterviewLog.query.filter_by(user_session_id=current_user.id, npc_id=npc_id)
@@ -129,11 +158,15 @@ def interview_chat():
         "proximidade ou hostilidade conforme as orientações da sua persona. "
         "Trate essa pessoa como um ator real do cenário: nunca a chame de estudante, "
         "aluno ou representante de trabalho escolar, e nunca mencione trabalho de escola.\n\n"
+        f"{SCOPE_GUARDRAIL} Pedidos fora do escopo também devem ser recusados no campo "
+        '"resposta", sempre no formato JSON abaixo.\n\n'
         "VOCÊ DEVE RESPONDER ESTRITAMENTE NESTE FORMATO JSON:\n"
         "{\n"
         '  "resposta": "Texto da sua fala como o personagem.",\n'
         '  "humor": "[Emoji] Estado de humor",\n'
-        '  "sugestoes": ["Opção 1 de pergunta curta que o aluno poderia te fazer agora", "Opção 2 de pergunta"]\n'
+        f'  "sugestoes": ["Pergunta curta que a pessoa do grupo {user_role} poderia fazer '
+        'a você em seguida, escrita na voz e no interesse desse grupo, nunca na sua própria '
+        'voz nem na de outro grupo", "Opção 2 no mesmo formato"]\n'
         "}"
     )
 
@@ -212,7 +245,10 @@ def tutor_chat():
     role_instruction = tutor_instruction_for(current_user.role_name)
     if not role_instruction:
         return jsonify(error="O tutor não está disponível para este perfil."), 403
-    instruction = f"{TUTOR_GLOBAL_INSTRUCTION}\n\n{role_instruction}"
+    limited = _ai_rate_limited()
+    if limited:
+        return jsonify(error=limited), 429
+    instruction = f"{TUTOR_GLOBAL_INSTRUCTION}\n\n{role_instruction}\n\n{SCOPE_GUARDRAIL}"
     try:
         answer = generate_reply(instruction, message, _request_history(payload))
     except GeminiUnavailableError as error:

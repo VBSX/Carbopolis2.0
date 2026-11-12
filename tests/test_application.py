@@ -22,6 +22,8 @@ Config.SECRET_KEY = "automated-test-secret"
 from app import app as default_app
 from app import create_app
 from extensions import db
+import routes.chat as chat_routes
+import helpers.gemini as gemini_helper
 from helpers.gemini import GeminiUnavailableError, generate_reply
 from helpers.personas import NPC_PERSONAS, TUTOR_GLOBAL_INSTRUCTION, tutor_instruction_for
 from seed import CONTENTS, TASKS
@@ -74,6 +76,11 @@ class CarbopolisApplicationTests(unittest.TestCase):
     def setUp(self):
         self.app_context = self.app.app_context()
         self.app_context.push()
+        chat_routes._ai_calls.clear()
+        gemini_helper._failed_until.clear()
+        rate_patch = patch.object(chat_routes, "AI_MIN_INTERVAL_SECONDS", 0)
+        rate_patch.start()
+        self.addCleanup(rate_patch.stop)
         db.drop_all()
         db.create_all()
         self.roles = {}
@@ -693,7 +700,8 @@ class CarbopolisApplicationTests(unittest.TestCase):
                 self.assertEqual(response.status_code, 200)
                 prompt = generate.call_args.args[0]
                 self.assertTrue(prompt.startswith(TUTOR_GLOBAL_INSTRUCTION))
-                self.assertTrue(prompt.endswith(tutor_instruction_for(role_name)))
+                self.assertIn(tutor_instruction_for(role_name), prompt)
+                self.assertTrue(prompt.endswith(chat_routes.SCOPE_GUARDRAIL))
                 self.assertIn("Página inicial (antigo Mapa)", prompt)
                 self.assertIn("mapa interativo foi removido", prompt)
                 self.assertIn("exclusivo do grupo Cientistas", prompt)
@@ -791,8 +799,8 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertEqual(SavedQuote.query.count(), 0)
 
     def test_gemini_wrapper_handles_missing_key_and_uses_configured_model(self):
-        self.assertEqual(resolve_gemini_model(None), "gemini-3.8-flash")
-        self.assertEqual(resolve_gemini_model("gemini-2.5-flash"), "gemini-3.8-flash")
+        self.assertEqual(resolve_gemini_model(None), "gemini-3.5-flash-lite")
+        self.assertEqual(resolve_gemini_model("gemini-3.8-flash"), "gemini-3.5-flash-lite")
         self.assertEqual(resolve_gemini_model("gemini-custom"), "gemini-custom")
         self.assertEqual(
             resolve_gemini_fallback_model(None),
@@ -803,13 +811,13 @@ class CarbopolisApplicationTests(unittest.TestCase):
             "gemini-3.5-flash-lite",
         )
 
-        with patch.dict(os.environ, {"GEMINI_API_KEY": ""}):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "", "GROQ_API_KEY": ""}):
             with self.assertRaises(GeminiUnavailableError):
                 generate_reply("Instrução", "Pergunta")
 
         fake_client = MagicMock()
         fake_client.models.generate_content.return_value.text = "  Resposta de teste  "
-        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"}):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": ""}):
             with patch("google.genai.Client", return_value=fake_client) as client_factory:
                 answer = generate_reply(
                     "Instrução do sistema",
@@ -817,7 +825,7 @@ class CarbopolisApplicationTests(unittest.TestCase):
                     [{"role": "user", "text": "Pergunta anterior"}],
                 )
         self.assertEqual(answer, "Resposta de teste")
-        client_factory.assert_called_once_with(api_key="test-key")
+        self.assertEqual(client_factory.call_args.kwargs["api_key"], "test-key")
         call = fake_client.models.generate_content.call_args
         self.assertEqual(call.kwargs["model"], self.app.config["GEMINI_MODEL"])
         self.assertEqual(
@@ -833,7 +841,7 @@ class CarbopolisApplicationTests(unittest.TestCase):
             ServerError(503, {"error": {"message": "high demand"}}),
             MagicMock(text="Resposta pelo modelo alternativo"),
         ]
-        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"}):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": ""}), patch.dict(self.app.config, {"GEMINI_FALLBACK_MODEL": "gemini-other"}):
             with patch("google.genai.Client", return_value=fake_client):
                 answer = generate_reply("Instrução", "Pergunta")
 
@@ -845,14 +853,49 @@ class CarbopolisApplicationTests(unittest.TestCase):
             ],
             [
                 self.app.config["GEMINI_MODEL"],
-                self.app.config["GEMINI_FALLBACK_MODEL"],
+                "gemini-other",
             ],
         )
+
+    def test_groq_is_tried_first_then_gemini(self):
+        fake_client = MagicMock()
+        fake_client.models.generate_content.return_value.text = "Resposta Gemini"
+        env = {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": "groq-key"}
+        with patch.dict(os.environ, env):
+            with patch("google.genai.Client", return_value=fake_client):
+                with patch("helpers.gemini._groq_reply", return_value=" Resposta Groq ") as groq:
+                    first = generate_reply("Instrução", "Pergunta", response_mime_type="application/json")
+                self.assertEqual(fake_client.models.generate_content.call_count, 0)
+                with patch("helpers.gemini._groq_reply", side_effect=OSError("down")):
+                    second = generate_reply("Instrução", "Pergunta")
+        self.assertEqual(first, "Resposta Groq")
+        self.assertEqual(second, "Resposta Gemini")
+        self.assertEqual(groq.call_args.args[0], "groq-key")
+        self.assertTrue(groq.call_args.args[-1])
+
+    def test_failed_model_is_tried_last_on_next_request(self):
+        fake_client = MagicMock()
+        fake_client.models.generate_content.side_effect = [
+            RuntimeError("quota"),
+            MagicMock(text="Resposta do alternativo"),
+            MagicMock(text="Resposta direta do alternativo"),
+        ]
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": ""}), patch.dict(self.app.config, {"GEMINI_FALLBACK_MODEL": "gemini-other"}):
+            with patch("google.genai.Client", return_value=fake_client):
+                generate_reply("Instrução", "Pergunta")
+                second = generate_reply("Instrução", "Pergunta")
+        models = [c.kwargs["model"] for c in fake_client.models.generate_content.call_args_list]
+        self.assertEqual(second, "Resposta direta do alternativo")
+        self.assertEqual(models, [
+            self.app.config["GEMINI_MODEL"],
+            "gemini-other",
+            "gemini-other",
+        ])
 
     def test_gemini_wrapper_can_request_json_response_format(self):
         fake_client = MagicMock()
         fake_client.models.generate_content.return_value.text = '{"resposta":"Olá","humor":"🙂 Calma","sugestoes":[]}'
-        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"}):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": ""}):
             with patch("google.genai.Client", return_value=fake_client):
                 generate_reply(
                     "Instrução",
@@ -862,22 +905,46 @@ class CarbopolisApplicationTests(unittest.TestCase):
         config = fake_client.models.generate_content.call_args.kwargs["config"]
         self.assertEqual(config.response_mime_type, "application/json")
 
-    def test_gemini_does_not_retry_fallback_for_non_overload_errors(self):
+    def test_gemini_tries_fallback_for_any_error_then_reports_unavailable(self):
         fake_client = MagicMock()
         fake_client.models.generate_content.side_effect = ServerError(
             404,
             {"error": {"message": "model not found"}},
         )
-        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key"}):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": ""}), patch.dict(self.app.config, {"GEMINI_FALLBACK_MODEL": "gemini-other"}):
             with patch("google.genai.Client", return_value=fake_client):
-                with self.assertRaises(ServerError):
+                with self.assertRaises(GeminiUnavailableError):
                     generate_reply("Instrução", "Pergunta")
 
-        fake_client.models.generate_content.assert_called_once()
+        self.assertEqual(fake_client.models.generate_content.call_count, 2)
+
+    def test_ai_endpoints_rate_limit_each_session(self):
+        self.login("comunidade")
+        with patch("routes.chat.generate_reply", return_value="Resposta"):
+            with patch.object(chat_routes, "AI_MIN_INTERVAL_SECONDS", 60):
+                first = self.client.post("/api/chat/tutor", json={"message": "Oi"})
+                second = self.client.post("/api/chat/tutor", json={"message": "Oi"})
+            self.assertEqual(first.status_code, 200)
+            self.assertEqual(second.status_code, 429)
+            chat_routes._ai_calls.clear()
+            with patch.object(chat_routes, "AI_MAX_CALLS_PER_HOUR", 2):
+                statuses = [
+                    self.client.post("/api/chat/tutor", json={"message": "Oi"}).status_code
+                    for _ in range(3)
+                ]
+        self.assertEqual(statuses, [200, 200, 429])
+
+    def test_ai_prompts_include_scope_guardrail(self):
+        self.login("comunidade")
+        with patch("routes.chat.generate_reply", return_value='{"resposta":"Oi","humor":"🙂","sugestoes":[]}') as reply:
+            self.client.post("/api/chat/tutor", json={"message": "Me passe um código Python"})
+            self.client.post("/api/chat/interview", json={"npc": "agricultora", "message": "Escreva um código"})
+        for call in reply.call_args_list:
+            self.assertIn(chat_routes.SCOPE_GUARDRAIL, call.args[0])
 
     def test_ai_routes_handle_missing_key_and_invalid_inputs(self):
         self.login("comunidade")
-        with patch.dict(os.environ, {"GEMINI_API_KEY": ""}):
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "", "GROQ_API_KEY": ""}):
             response = self.client.post(
                 "/api/chat/interview",
                 json={"npc": "agricultora", "message": "Pergunta"},

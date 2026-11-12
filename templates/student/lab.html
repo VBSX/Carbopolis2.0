@@ -15,14 +15,15 @@
 <section class="hud-panel p-3 sm:p-4 mb-4">
 <div class="hud-panel p-3 mb-3" style="border-color:#38bdf866">
 <h2 class="font-bold"><i class="fa-solid fa-book-open text-sky-300"></i> Guia do Cientista — Projeção da Água</h2>
-<p class="text-sm text-slate-300 mt-1">Modele cenários para o Rio Ivaí comparando a condição atual com a possível alteração da água caso a proposta TermoBR seja aprovada.</p>
+<p class="text-sm text-slate-300 mt-1">Modele cenários para o Rio Ivaí comparando a condição atual com a possível alteração da água caso a proposta TermoBR seja aprovada. Todos os valores são simulações didáticas do EIA, não medições reais.</p>
 <ol class="text-sm text-slate-300 list-decimal ml-5 mt-1">
 <li>Escolha o cenário de água a analisar; os valores serão simulados, não coletados no local.</li>
 <li>Toque em <b>💧 Pipetar indicador</b> para iniciar o teste preditivo de pH.</li>
-<li>Observe a cor do tubo: <b class="text-red-300">vermelho/laranja = ácida</b>, <b class="text-green-300">verde = normal</b>, <b class="text-sky-300">azul = básica</b>.</li>
-<li>Leia o pH projetado e estime o Oxigênio Dissolvido (OD) para a temperatura informada.</li>
-<li>Toque em <b>Salvar Laudo</b> para registrar a projeção no Dossiê.</li>
+<li>Observe a cor do tubo: <b class="text-red-300">vermelho/laranja = ácida</b>, <b class="text-green-300">verde = normal</b>, <b class="text-sky-300">azul = básica</b>. pH abaixo de 7 indica água ácida; acima de 7, básica; perto de 7, neutra.</li>
+<li>Leia o pH projetado e anote o <b>Oxigênio Dissolvido estimado</b> para a temperatura informada. O Oxigênio Dissolvido mede quanta quantidade de oxigênio está disponível na água para peixes e outros organismos; quanto mais quente a água, menor tende a ser o Oxigênio Dissolvido.</li>
+<li>Toque em <b>Salvar Laudo</b> para registrar a projeção no Dossiê e usá-la como evidência no Júri Simulado.</li>
 </ol>
+<p class="text-xs text-slate-400 mt-2">Interpretação: pH muito baixo ou muito alto pode prejudicar a vida aquática; Oxigênio Dissolvido baixo indica risco de mortandade de peixes.</p>
 </div>
 <h2 class="font-bold text-lg mb-2">🧪 Bancada 1 — Modelagem da Água do Rio Ivaí</h2>
 <div class="flex items-center gap-2 mb-3" id="wSteps">
@@ -69,9 +70,10 @@
 <li>Observe o medidor de referência: verde = faixa de referência; vermelho = cenário de atenção.</li>
 <li>Registre a projeção no Dossiê.</li>
 </ol>
+<p class="text-xs text-slate-400 mt-2"><b>O que significam os valores:</b><br><b>SO₂</b> (dióxido de enxofre): gás liberado na queima de combustíveis fósseis, especialmente carvão e óleo. Valores altos irritam as vias respiratórias, agravam asma e bronquite e causam chuva ácida, que prejudica solos, águas e edifícios.<br><b>NOₓ</b> (óxidos de nitrogênio): gases formados na combustão em alta temperatura (usinas e veículos). Valores altos irritam os pulmões, reduzem a imunidade respiratória e contribuem para ozônio troposférico, smog e chuva ácida.<br><b>CO₂</b> (dióxido de carbono): gás de efeito estufa emitido na queima de qualquer combustível fóssil. Não é tóxico direto às pessoas em baixas concentrações, mas valores altos na atmosfera retêm calor e aceleram o aquecimento global e as mudanças climáticas.</p>
 </div>
 <h2 class="font-bold text-lg mb-2">🌬️ Bancada 2 — Modelagem das Emissões Atmosféricas</h2>
-<p class="text-sm text-slate-300 mb-3"><b>NO<sub>x</sub></b> é o nome dado a vários óxidos de nitrogênio, como NO e NO<sub>2</sub>, produzidos principalmente na combustão. Eles podem irritar as vias respiratórias e contribuir para a formação de ozônio e chuva ácida. O “x” indica diferentes compostos, não uma quantidade fixa de oxigênio.</p>
+<p class="text-sm text-slate-300 mb-3">Os três gases medidos são projeções do EIA, não medições de uma usina existente. Valores acima da faixa de referência indicam cenários de atenção ambiental e de saúde para a população de Ivaí dos Campos.</p>
 <label class="text-sm font-bold">PASSO 1 — Cenário de emissões</label>
 <select id="aSite" class="input-hud mb-3" onchange="airPreset()">
 <option value="45|55|68">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, gás) — SO₂ 45 · NOₓ 55 · CO₂ 68 ppm</option>
@@ -93,6 +95,15 @@
 <svg class="gauge" viewBox="0 0 200 110"><path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#1e3a5f" stroke-width="14"/><path id="aArc" d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#22ffaa" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="200"/><line id="aNeedle" x1="100" y1="100" x2="100" y2="30" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" transform="rotate(-70 100 100)"/><circle cx="100" cy="100" r="8" fill="#fbbf24"/></svg>
 <div id="aGaugeVal" class="font-mono2 font-bold">45 ppm projetados</div>
 </div>
+<div class="hud-panel p-3 mt-3" style="border-color:#f59e0b40">
+<h3 class="font-bold text-amber-300">Interpretação dos resultados</h3>
+<ul class="text-sm text-slate-300 list-disc ml-4 mt-1 space-y-1">
+<li><b>SO₂ acima de 100 ppm:</b> alto risco de irritação respiratória, agravamento de asma/bronquite e chuva ácida.</li>
+<li><b>NOₓ acima de 100 ppm:</b> risco de problemas respiratórios, redução da imunidade, smog e chuva ácida.</li>
+<li><b>CO₂ acima de 100 ppm:</b> alto teor de gás de efeito estufa na projeção; contribui para o aquecimento global.</li>
+<li>Valores abaixo da faixa de referência são considerados dentro do esperado para o cenário modelado.</li>
+</ul>
+<p class="text-xs text-slate-400 mt-2">Esses limites são didáticos e servem para comparar cenários entre as propostas, não para afirmar impactos reais em Ivaí dos Campos.</p>
 </div>
 </section>
 
@@ -101,14 +112,27 @@
 <h2 class="font-bold text-lg mb-2">💾 PASSO 5 — Salvar Laudo no Dossiê</h2>
 <form method="POST" class="grid sm:grid-cols-3 gap-2">
 <input type="hidden" name="sample_type" id="fType" value="water">
-<input name="ph_value" id="fPH" placeholder="pH" class="input-hud">
-<input name="temp_celsius" id="fTemp" placeholder="Temp °C" class="input-hud">
-<input name="od_value" id="fOD" placeholder="OD mg/L" class="input-hud">
-<input name="so2_ppm" id="fSO2" placeholder="SO₂ (ppm)" class="input-hud">
-<input name="nox_ppm" id="fNOx" placeholder="NOₓ (ppm)" class="input-hud">
-<input name="co2_ppm" id="fCO2" placeholder="CO₂ (ppm)" class="input-hud">
-<input name="notes" id="fNotes" placeholder="Observações" class="input-hud sm:col-span-2">
-<label class="text-sm flex items-center gap-2"><input type="checkbox" name="saved_to_dossier" checked class="w-6 h-6"> Salvar no Dossiê Final</label>
+<p class="text-xs text-slate-400 sm:col-span-3">Valores preenchidos automaticamente pelas bancadas de simulação. Não edite manualmente.</p>
+<label class="text-sm font-bold sm:col-span-3">Origem dos dados (teste realizado):</label>
+<select name="teste_origem" id="fTesteOrigem" class="input-hud sm:col-span-3">
+  <optgroup label="Água">
+    <option value="Teste de pH — Rio Ivaí (perto da zona industrial)">Teste de pH — Rio Ivaí (perto da zona industrial)</option>
+    <option value="Teste de pH — Cenário de referência (zona agrícola)">Teste de pH — Cenário de referência (zona agrícola)</option>
+  </optgroup>
+  <optgroup label="Ar">
+    <option value="Teste de emissões — Perto da usina TermoBR (gás natural)">Teste de emissões — Perto da usina TermoBR (gás natural)</option>
+    <option value="Teste de emissões — Perto da usina TermoBR (carvão)">Teste de emissões — Perto da usina TermoBR (carvão)</option>
+    <option value="Teste de emissões — Zona agrícola (referência)">Teste de emissões — Zona agrícola (referência)</option>
+  </optgroup>
+</select>
+<input name="ph_value" id="fPH" placeholder="pH" class="input-hud" readonly>
+<input name="temp_celsius" id="fTemp" placeholder="Temp °C" class="input-hud" readonly>
+<input name="od_value" id="fOD" placeholder="Oxigênio Dissolvido (mg/L)" class="input-hud" readonly>
+<input name="so2_ppm" id="fSO2" placeholder="SO₂ (ppm)" class="input-hud" readonly>
+<input name="nox_ppm" id="fNOx" placeholder="NOₓ (ppm)" class="input-hud" readonly>
+<input name="co2_ppm" id="fCO2" placeholder="CO₂ (ppm)" class="input-hud" readonly>
+<input name="notes" id="fNotes" placeholder="Observações (opcional)" class="input-hud sm:col-span-2">
+<label class="text-sm flex items-center gap-2 sm:col-span-3"><input type="checkbox" name="saved_to_dossier" checked class="w-6 h-6"> Salvar no Dossiê Final</label>
 <button class="btn-hud sm:col-span-3"><i class="fa-solid fa-floppy-disk"></i> Salvar Laudo no Dossiê</button>
 </form>
 <p class="text-xs text-slate-400 mt-2">Dica: os valores medidos nas bancadas preenchem o formulário automaticamente. <button type="button" onclick="fillForm()" class="underline text-emerald-300">Usar última medição ⤴</button></p>

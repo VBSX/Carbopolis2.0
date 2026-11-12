@@ -4,6 +4,7 @@ if (tutor) {
   const launcher = tutor.querySelector('.ai-tutor-launcher');
   const panel = tutor.querySelector('.ai-tutor-panel');
   const closeButton = tutor.querySelector('.ai-chat-close');
+  const expandButton = tutor.querySelector('.ai-chat-expand');
   const messages = tutor.querySelector('.ai-tutor-messages');
   const form = tutor.querySelector('.ai-tutor-form');
   const input = form.querySelector('textarea');
@@ -11,6 +12,20 @@ if (tutor) {
   const storageKey = `carbopolis-tutor-history-v1-${tutor.dataset.role}`;
   let busy = false;
   let history = [];
+
+  const escapeHtml = text => {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+  };
+
+  const renderMarkdown = text => {
+    let html = escapeHtml(text);
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+    return html;
+  };
 
   try {
     const saved = JSON.parse(sessionStorage.getItem(storageKey) || '[]');
@@ -24,10 +39,30 @@ if (tutor) {
     console.warn('O histórico local do tutor não pôde ser carregado.', error);
   }
 
+  // Renders **bold** and markdown bullets/headings without innerHTML, so model output never injects HTML.
+  const setText = (element, text) => {
+    element.replaceChildren();
+    const clean = text.replace(/^[ \t]*[*-][ \t]+/gm, '• ').replace(/^#{1,6}[ \t]+/gm, '');
+    clean.split(/\*\*([\s\S]+?)\*\*/).forEach((part, index) => {
+      if (!part) return;
+      if (index % 2) {
+        const strong = document.createElement('strong');
+        strong.textContent = part;
+        element.append(strong);
+      } else {
+        element.append(part);
+      }
+    });
+  };
+
   const appendMessage = (role, text, extraClass = '') => {
     const message = document.createElement('p');
     message.className = `ai-chat-message ${role} ${extraClass}`.trim();
-    message.textContent = text;
+    if (role === 'assistant') {
+      message.innerHTML = renderMarkdown(text);
+    } else {
+      message.textContent = text;
+    }
     messages.append(message);
     messages.scrollTop = messages.scrollHeight;
     return message;
@@ -46,11 +81,18 @@ if (tutor) {
 
   const setOpen = open => {
     panel.hidden = !open;
+    tutor.classList.toggle('is-open', open);
     launcher.setAttribute('aria-expanded', String(open));
     if (open) input.focus();
   };
   launcher.addEventListener('click', () => setOpen(panel.hidden));
   closeButton.addEventListener('click', () => setOpen(false));
+  expandButton.addEventListener('click', () => {
+    const expanded = panel.classList.toggle('expanded');
+    expandButton.setAttribute('aria-pressed', String(expanded));
+    expandButton.setAttribute('aria-label', expanded ? 'Reduzir tutor' : 'Ampliar tutor');
+    messages.scrollTop = messages.scrollHeight;
+  });
 
   if (window.visualViewport) {
     let lastHeight = window.visualViewport.height;
@@ -88,7 +130,7 @@ if (tutor) {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'A IA está indisponível no momento.');
-      pending.textContent = data.reply;
+      pending.innerHTML = renderMarkdown(data.reply);
       history.push({role: 'user', text}, {role: 'model', text: data.reply});
       saveHistory();
     } catch (error) {

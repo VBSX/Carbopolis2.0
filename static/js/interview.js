@@ -22,10 +22,21 @@ if (interviewForm) {
   };
 
   const parseNpcReply = rawReply => {
+    const rawText = typeof rawReply === 'string' ? rawReply.trim() : '';
+    const candidate = rawText
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/, '')
+      .trim();
+    const unstructured = text => ({text, structured: false, suggestions: []});
+
     try {
-      const data = JSON.parse(rawReply);
+      const data = JSON.parse(candidate);
       if (!data || typeof data.resposta !== 'string' || !data.resposta.trim()) {
-        return {text: rawReply, structured: false, suggestions: []};
+        return unstructured(
+          candidate.startsWith('{')
+            ? 'Não foi possível formatar a resposta do personagem. Tente novamente.'
+            : rawText
+        );
       }
       return {
         text: data.resposta.trim(),
@@ -36,7 +47,24 @@ if (interviewForm) {
           : []
       };
     } catch (_error) {
-      return {text: rawReply, structured: false, suggestions: []};
+      const match = candidate.match(/"resposta"\s*:\s*"((?:\\.|[^"\\])*)/);
+      if (match) {
+        for (let end = match[1].length; end > 0; end -= 1) {
+          try {
+            const text = JSON.parse(`"${match[1].slice(0, end)}"`);
+            if (typeof text === 'string' && text.trim()) {
+              return unstructured(text.trim());
+            }
+          } catch (_parseError) {
+            // A truncated escape sequence is discarded while preserving the reply.
+          }
+        }
+      }
+      return unstructured(
+        candidate.startsWith('{')
+          ? 'Não foi possível formatar a resposta do personagem. Tente novamente.'
+          : rawText
+      );
     }
   };
 

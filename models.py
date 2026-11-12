@@ -123,6 +123,7 @@ class LabSample(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False)
     sample_type = db.Column(db.String(20), nullable=False)
+    teste_origem = db.Column(db.String(200), nullable=True)
     ph_value = db.Column(db.Float, nullable=True)
     so2_ppm = db.Column(db.Float, nullable=True)
     nox_ppm = db.Column(db.Float, nullable=True)

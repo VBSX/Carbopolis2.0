@@ -1,10 +1,13 @@
+from datetime import timedelta, timezone
+
 import click
-from flask import Flask, current_app, flash, redirect, url_for
+from flask import Flask, current_app, flash, redirect, request, url_for
 from flask_login import current_user
 
 from config import Config
 from extensions import db, login_manager
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import configure_mappers, joinedload
 
 
 def create_app(config_class=Config):
@@ -14,7 +17,9 @@ def create_app(config_class=Config):
     db.init_app(app)
     login_manager.init_app(app)
 
-    from models import UserSession  # noqa: F401
+    from models import UserSession, utcnow  # noqa: F401
+
+    configure_mappers()  # the Role.sessions backref creates UserSession.role, used by load_user
     from routes.admin import admin_bp
     from routes.auth import auth_bp
     from routes.chat import chat_bp
@@ -29,7 +34,7 @@ def create_app(config_class=Config):
 
     @login_manager.user_loader
     def load_user(user_id):
-        return db.session.get(UserSession, int(user_id))
+        return db.session.get(UserSession, int(user_id), options=[joinedload(UserSession.role)])
 
     @app.cli.command("reset-user-data")
     @click.option(
@@ -93,11 +98,15 @@ def create_app(config_class=Config):
 
     @app.before_request
     def touch_session():
-        if current_user.is_authenticated:
-            from datetime import datetime, timezone
-
-            current_user.last_active = datetime.now(timezone.utc)
-            db.session.commit()
+        # Each write costs ~4 round trips to Neon, so skip static files and only touch every 5 min.
+        if request.endpoint == "static" or not current_user.is_authenticated:
+            return
+        now = utcnow()
+        last = current_user.last_active
+        if last and now - last.replace(tzinfo=timezone.utc) < timedelta(minutes=5):
+            return
+        current_user.last_active = now
+        db.session.commit()
 
     @app.context_processor
     def inject_globals():
@@ -140,4 +149,4 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=5020)

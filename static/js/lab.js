@@ -1,6 +1,6 @@
 /* Lab guiado Carbopolis 2.0 */
-let lastWater = {ph: null, temp: null, od: null};
-let lastAir = {so2: null, nox: null, co2: null};
+let lastWater = {ph: null, temp: null, od: null, origem: null};
+let lastAir = {so2: null, nox: null, co2: null, origem: null};
 function phColor(ph){if(ph<3)return '#E53935';if(ph<5)return '#FB8C00';if(ph<6.5)return '#FDD835';if(ph<=7.5)return '#7ED6A0';if(ph<=9)return '#29B6F6';return '#5C6BC0';}
 function setStep(id,n){document.querySelectorAll('#'+id+' .stepdot').forEach(d=>{d.classList.toggle('on',+d.dataset.s<=n);});}
 function waterStep2(){
@@ -15,13 +15,13 @@ function waterStep2(){
     liq.style.background=c;liq.style.height='70%';
     let diag = ph<5.5 ? '🔴 <b>CENÁRIO ÁCIDO</b> — projeção hipotética a ser avaliada no EIA.' : (ph<=7.5 ? '🟢 <b>PRÓXIMO À FAIXA NEUTRA</b> — cenário de referência.' : '🔵 <b>CENÁRIO BÁSICO</b> — a origem precisaria ser investigada.');
     document.getElementById('wResult').innerHTML=`<b class="font-mono2 text-lg">pH projetado ${ph.toFixed(1)}</b><br>${diag}<br><span class="text-xs">Resultado de simulação, não de coleta real.</span>`;
-    lastWater.ph=ph;setStep('wSteps',3);
+    lastWater.ph=ph;lastWater.origem=document.getElementById('wSite').selectedOptions[0].text;setStep('wSteps',3);
   },900);
 }
 function waterStep4(){
   const t=parseFloat(document.getElementById('wTemp').value||'22');
   const od=Math.max(0,14.6-0.39*t+0.007*t*t-0.00006*t*t*t);
-  document.getElementById('wOD').textContent=`OD estimado no cenário: ${od.toFixed(2)} mg/L a ${t}°C ${t>26?'(⚠️ uma temperatura mais alta reduziria o OD estimado)':''} — valor modelado, não medido.`;
+  document.getElementById('wOD').textContent=`Oxigênio Dissolvido estimado no cenário: ${od.toFixed(2)} mg/L a ${t}°C ${t>26?'(⚠️ uma temperatura mais alta reduziria o Oxigênio Dissolvido estimado)':''} — valor modelado, não medido.`;
   lastWater.temp=t;lastWater.od=+od.toFixed(2);setStep('wSteps',4);
   fillForm();
 }
@@ -35,9 +35,13 @@ function airStep2(){
   document.getElementById('aArc').style.stroke=alert?'#f87171':'#22ffaa';
   document.getElementById('aArc').style.strokeDashoffset=283-(283*frac);
   document.getElementById('aGaugeVal').textContent=`${s} ppm projetados`;
-  lastAir={so2:s,nox:n,co2:c};fillForm();
+  lastAir={so2:s,nox:n,co2:c,origem:document.getElementById('aSite').selectedOptions[0].text};fillForm();
 }
 function fillForm(){
+  const tipo=document.getElementById('fType').value;
+  const select=document.getElementById('fTesteOrigem');
+  if(tipo==='water'&&lastWater.origem){select.value=lastWater.origem;}
+  else if(tipo==='air'&&lastAir.origem){select.value=lastAir.origem;}
   if(lastWater.ph!=null)document.getElementById('fPH').value=lastWater.ph;
   if(lastWater.temp!=null)document.getElementById('fTemp').value=lastWater.temp;
   if(lastWater.od!=null)document.getElementById('fOD').value=lastWater.od;

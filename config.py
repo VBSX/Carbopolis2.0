@@ -8,9 +8,9 @@ ROOT_DIR = BASE_DIR.parent.parent
 load_dotenv(ROOT_DIR / ".env.local", override=True)
 load_dotenv(BASE_DIR / ".env", override=False)
 
-DEFAULT_GEMINI_MODEL = "gemini-3.8-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
 DEFAULT_GEMINI_FALLBACK_MODEL = "gemini-3.5-flash-lite"
-RETIRED_GEMINI_MODELS = {"gemini-2.5-flash"}
+RETIRED_GEMINI_MODELS = {"gemini-2.5-flash", "gemini-3.8-flash"}
 RETIRED_GEMINI_FALLBACK_MODELS = {"gemini-2.5-flash-lite"}
 
 
@@ -46,6 +46,7 @@ class Config:
     GEMINI_FALLBACK_MODEL = resolve_gemini_fallback_model(
         os.getenv("GEMINI_FALLBACK_MODEL", DEFAULT_GEMINI_FALLBACK_MODEL)
     )
+    GROQ_MODEL = os.getenv("GROQ_MODEL") or "openai/gpt-oss-120b"
     SQLALCHEMY_DATABASE_URI = normalize_database_url(
         os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'carbopolis.db'}")
     )
@@ -55,9 +56,8 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAX_CONTENT_LENGTH = 9 * 1024 * 1024
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,
-    }
+    # Neon is ~150 ms away; recycling replaces a ping round trip on every checkout.
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_recycle": 240}
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     REMEMBER_COOKIE_HTTPONLY = True
