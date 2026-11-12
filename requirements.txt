@@ -1,11 +1,11 @@
-﻿# Dependencias do Carbopolis 2.0
+# Dependencias do Carbopolis 2.0
 # Instalacao: pip install -r requirements.txt
 
 Flask==3.0.3
 Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
 SQLAlchemy==2.1.5
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 google-genai==2.31.0
 reportlab==4.5.1
 
