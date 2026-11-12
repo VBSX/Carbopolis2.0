@@ -28,7 +28,10 @@ def _groq_reply(api_key, model, system_instruction, user_message, history, json_
         role = "user" if entry["role"] == "user" else "assistant"
         messages.append({"role": role, "content": entry["text"]})
     messages.append({"role": "user", "content": user_message})
-    body = {"model": model, "messages": messages, "temperature": 0.7, "max_tokens": 600}
+    # gpt-oss spends hidden reasoning tokens from max_tokens; 600 cut JSON answers short (400 json_validate_failed).
+    body = {"model": model, "messages": messages, "temperature": 0.7, "max_tokens": 2000}
+    if model.startswith("openai/gpt-oss"):
+        body["reasoning_effort"] = "low"
     if json_mode:
         body["response_format"] = {"type": "json_object"}
     request = urllib.request.Request(

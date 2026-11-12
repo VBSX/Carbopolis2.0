@@ -15,7 +15,7 @@ function waterStep2(){
     liq.style.background=c;liq.style.height='70%';
     let diag = ph<5.5 ? '🔴 <b>CENÁRIO ÁCIDO</b> — projeção hipotética a ser avaliada no EIA.' : (ph<=7.5 ? '🟢 <b>PRÓXIMO À FAIXA NEUTRA</b> — cenário de referência.' : '🔵 <b>CENÁRIO BÁSICO</b> — a origem precisaria ser investigada.');
     document.getElementById('wResult').innerHTML=`<b class="font-mono2 text-lg">pH projetado ${ph.toFixed(1)}</b><br>${diag}<br><span class="text-xs">Resultado de simulação, não de coleta real.</span>`;
-    lastWater.ph=ph;lastWater.origem=document.getElementById('wSite').selectedOptions[0].text;setStep('wSteps',3);
+    lastWater.ph=ph;lastWater.origem=document.getElementById('wSite').selectedOptions[0].dataset.origin;setStep('wSteps',3);
   },900);
 }
 function waterStep4(){
@@ -35,14 +35,23 @@ function airStep2(){
   document.getElementById('aArc').style.stroke=alert?'#f87171':'#22ffaa';
   document.getElementById('aArc').style.strokeDashoffset=283-(283*frac);
   document.getElementById('aGaugeVal').textContent=`${s} ppm projetados`;
-  lastAir={so2:s,nox:n,co2:c,origem:document.getElementById('aSite').selectedOptions[0].text};fillForm();
+  lastAir={so2:s,nox:n,co2:c,origem:document.getElementById('aSite').selectedOptions[0].dataset.origin};fillForm();
 }
 function fillForm(){
-  const tipo=document.getElementById('fType').value;
   const select=document.getElementById('fTesteOrigem');
-  if(tipo==='water'&&lastWater.origem){select.value=lastWater.origem;}
-  else if(tipo==='air'&&lastAir.origem){select.value=lastAir.origem;}
-  if(lastWater.ph!=null)document.getElementById('fPH').value=lastWater.ph;
+  const origens = new Set([lastWater.origem, lastAir.origem].filter(Boolean));
+  Array.from(select.options).forEach(option => {
+    option.selected = origens.has(option.value);
+  });
+  const originInputs = document.getElementById('fTesteOrigemInputs');
+  originInputs.replaceChildren(...Array.from(origens, origem => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'teste_origem';
+    input.value = origem;
+    return input;
+  }));
+  if (lastWater.ph != null) document.getElementById('fPH').value = lastWater.ph;
   if(lastWater.temp!=null)document.getElementById('fTemp').value=lastWater.temp;
   if(lastWater.od!=null)document.getElementById('fOD').value=lastWater.od;
   if(lastAir.so2!=null){document.getElementById('fSO2').value=lastAir.so2;document.getElementById('fNOx').value=lastAir.nox;document.getElementById('fCO2').value=lastAir.co2;document.getElementById('fType').value=(lastWater.ph!=null&&lastAir.so2!=null)?'water':(lastAir.so2!=null?'air':'water');}

@@ -45,9 +45,14 @@
     timestamp.textContent = report.timestamp;
     headingRow.append(title, timestamp);
 
-    const conclusion = document.createElement("p");
-    conclusion.className = "text-sm text-slate-300 mt-2";
-    conclusion.textContent = report.conclusion;
+    const conclusion = document.createElement("ul");
+    conclusion.className = "mt-3 space-y-2";
+    for (const line of report.conclusion_lines) {
+      const item = document.createElement("li");
+      item.className = "rounded-lg border border-slate-700/60 bg-slate-900/50 px-3 py-2 text-sm text-slate-300";
+      item.textContent = line;
+      conclusion.append(item);
+    }
     const author = document.createElement("p");
     author.className = "text-xs text-amber-200 mt-2";
     author.textContent = `Publicado por: ${report.author}`;

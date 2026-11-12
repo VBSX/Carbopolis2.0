@@ -35,9 +35,9 @@
 </div>
 <label class="text-sm font-bold">PASSO 1 — Cenário de água</label>
 <select id="wSite" class="input-hud mb-3">
-<option value="6.8">🌊 Rio Ivaí (Cenário Atual - Água Limpa)</option>
-<option value="4.5">🏭 Projeção EIA: Efluentes de Resfriamento (Projeto TermoBR)</option>
-<option value="5.5">🌾 Rio Ivaí — cenário de referência na zona agrícola</option>
+<option value="6.8" data-origin="Teste de pH — Rio Ivaí (cenário atual, água limpa)">🌊 Rio Ivaí (Cenário Atual - Água Limpa)</option>
+<option value="4.5" data-origin="Teste de pH — Efluentes de resfriamento (Projeto TermoBR)">🏭 Projeção EIA: Efluentes de Resfriamento (Projeto TermoBR)</option>
+<option value="5.5" data-origin="Teste de pH — Cenário de referência (zona agrícola)">🌾 Rio Ivaí — cenário de referência na zona agrícola</option>
 </select>
 <div class="grid sm:grid-cols-2 gap-3">
 <div class="text-center">
@@ -76,9 +76,9 @@
 <p class="text-sm text-slate-300 mb-3">Os três gases medidos são projeções do EIA, não medições de uma usina existente. Valores acima da faixa de referência indicam cenários de atenção ambiental e de saúde para a população de Ivaí dos Campos.</p>
 <label class="text-sm font-bold">PASSO 1 — Cenário de emissões</label>
 <select id="aSite" class="input-hud mb-3" onchange="airPreset()">
-<option value="45|55|68">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, gás) — SO₂ 45 · NOₓ 55 · CO₂ 68 ppm</option>
-<option value="180|125|98">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, carvão) — SO₂ 180 · NOₓ 125 · CO₂ 98 ppm</option>
-<option value="12|15|30">🌾 Cenário de referência: ar da zona agrícola — SO₂ 12 · NOₓ 15 · CO₂ 30 ppm</option>
+<option value="45|55|68" data-origin="Teste de emissões — Perto da usina TermoBR (gás natural)">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, gás) — SO₂ 45 · NOₓ 55 · CO₂ 68 ppm</option>
+<option value="180|125|98" data-origin="Teste de emissões — Perto da usina TermoBR (carvão)">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, carvão) — SO₂ 180 · NOₓ 125 · CO₂ 98 ppm</option>
+<option value="12|15|30" data-origin="Teste de emissões — Zona agrícola (referência)">🌾 Cenário de referência: ar da zona agrícola — SO₂ 12 · NOₓ 15 · CO₂ 30 ppm</option>
 </select>
 <div class="grid sm:grid-cols-2 gap-3">
 <div>
@@ -112,11 +112,12 @@
 <h2 class="font-bold text-lg mb-2">💾 PASSO 5 — Salvar Laudo no Dossiê</h2>
 <form method="POST" class="grid sm:grid-cols-3 gap-2">
 <input type="hidden" name="sample_type" id="fType" value="water">
-<p class="text-xs text-slate-400 sm:col-span-3">Valores preenchidos automaticamente pelas bancadas de simulação. Não edite manualmente.</p>
+<p class="text-xs text-slate-400 sm:col-span-3">Origem dos dados automaticamente preenchida com base na simulação realizada. Campo somente para visualização.</p>
 <label class="text-sm font-bold sm:col-span-3">Origem dos dados (teste realizado):</label>
-<select name="teste_origem" id="fTesteOrigem" class="input-hud sm:col-span-3">
+<select id="fTesteOrigem" class="input-hud sm:col-span-3" multiple size="4" disabled>
   <optgroup label="Água">
-    <option value="Teste de pH — Rio Ivaí (perto da zona industrial)">Teste de pH — Rio Ivaí (perto da zona industrial)</option>
+    <option value="Teste de pH — Rio Ivaí (cenário atual, água limpa)">Teste de pH — Rio Ivaí (cenário atual, água limpa)</option>
+    <option value="Teste de pH — Efluentes de resfriamento (Projeto TermoBR)">Teste de pH — Efluentes de resfriamento (Projeto TermoBR)</option>
     <option value="Teste de pH — Cenário de referência (zona agrícola)">Teste de pH — Cenário de referência (zona agrícola)</option>
   </optgroup>
   <optgroup label="Ar">
@@ -125,6 +126,8 @@
     <option value="Teste de emissões — Zona agrícola (referência)">Teste de emissões — Zona agrícola (referência)</option>
   </optgroup>
 </select>
+<div id="fTesteOrigemInputs"></div>
+<p class="text-xs text-slate-400 sm:col-span-3">A origem registrada corresponderá exatamente aos cenários selecionados nas bancadas.</p>
 <input name="ph_value" id="fPH" placeholder="pH" class="input-hud" readonly>
 <input name="temp_celsius" id="fTemp" placeholder="Temp °C" class="input-hud" readonly>
 <input name="od_value" id="fOD" placeholder="Oxigênio Dissolvido (mg/L)" class="input-hud" readonly>

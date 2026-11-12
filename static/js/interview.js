@@ -12,6 +12,25 @@ if (interviewForm) {
   const npcRole = document.getElementById('interview-role');
   let busy = false;
 
+  const moodDescriptions = {
+    '😠': 'Sentindo raiva e defensividade',
+    '😒': 'Sentindo desconfiança',
+    '🙂': 'Sentindo tranquilidade',
+    '😊': 'Sentindo acolhimento',
+    '🤔': 'Pensando cuidadosamente',
+    '😐': 'Mantendo neutralidade',
+    '😟': 'Sentindo preocupação',
+    '😡': 'Sentindo irritação intensa',
+    '😳': 'Sentindo surpresa'
+  };
+
+  const formatMood = mood => {
+    const text = typeof mood === 'string' ? mood.trim() : '';
+    if (/[A-Za-zÀ-ÿ]/.test(text)) return text;
+    if (!text) return 'Estado de humor não informado';
+    return `${text} ${moodDescriptions[text] || 'Estado de humor não informado'}`;
+  };
+
   const appendMessage = (role, text) => {
     const message = document.createElement('p');
     message.className = `rpg-message ${role}`;
@@ -40,7 +59,7 @@ if (interviewForm) {
       }
       return {
         text: data.resposta.trim(),
-        mood: typeof data.humor === 'string' ? data.humor : '',
+        mood: formatMood(data.humor),
         structured: true,
         suggestions: Array.isArray(data.sugestoes)
           ? data.sugestoes.filter(item => typeof item === 'string' && item.trim()).slice(0, 4)

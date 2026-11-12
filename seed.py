@@ -1,9 +1,18 @@
 """Seed via URL direta (skill neon-postgres: migracoes/seed usam UNPOOLED)."""
 import os
+import unicodedata
 from config import Config, normalize_database_url
 from app import create_app
 from extensions import db
 from models import ContentBlock, Role, SimulationVariable, Task
+
+
+def _sem_acentos(texto: str) -> str:
+    """Remove acentos para comparação de títulos antigos no banco."""
+    if not texto:
+        return ""
+    nfkd = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 ROLES = [
     ("termobr", "termo", "TermoBR", "Equipe que representa a proposta de usina termelétrica"),
@@ -100,11 +109,23 @@ def run():
                 b.hint_text = hint
         for rname, title, desc, atype in TASKS:
             role = Role.query.filter_by(name=rname).first()
+            if not role:
+                continue
+            # Busca primeiro pelo título exato (com acento)
             exists = Task.query.filter_by(role_id=role.id, title=title).first()
+            # Se não encontrar, tenta encontrar por título antigo sem acento (remoção de acentos para comparação)
+            if not exists:
+                titulo_sem_acentos = _sem_acentos(title)
+                todas = Task.query.filter_by(role_id=role.id).all()
+                for t in todas:
+                    if _sem_acentos(t.title) == titulo_sem_acentos:
+                        exists = t
+                        # Corrige o título no banco para a versão com acento
+                        exists.title = title
+                        break
             if not exists:
                 db.session.add(Task(role_id=role.id, title=title, description=desc, action_type=atype, is_active=True))
             else:
-                # atualiza a descricao caso o titulo antigo (sem acento) coincida pelo prefixo Q
                 exists.description = desc
                 exists.action_type = atype
         db.session.commit()

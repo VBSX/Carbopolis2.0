@@ -72,8 +72,9 @@ def _interpret_value(field, value, sample_type):
 def _build_laudo_notes(measurements, sample_type, manual_notes, teste_origem=None):
     """Constrói o texto do laudo com interpretação automática de cada valor medido."""
     partes = []
-    if teste_origem and teste_origem.strip():
-        partes.append(f"Origem do teste: {teste_origem.strip()}.")
+    origens = teste_origem if isinstance(teste_origem, (list, tuple)) else ([teste_origem] if teste_origem else [])
+    if origens:
+        partes.append("Origem do teste: " + " + ".join(o.strip() for o in origens if o.strip()) + ".")
     for field in ("ph_value", "temp_celsius", "od_value", "so2_ppm", "nox_ppm", "co2_ppm"):
         value = measurements.get(field)
         if value is None:
@@ -115,11 +116,19 @@ def _public_lab_reports():
             conclusion_parts.append("; ".join(measurements))
         if not conclusion_parts:
             conclusion_parts.append(f"Análise de {sample_name} registrada pelo Instituto de Pesquisas.")
+        conclusion = " — ".join(conclusion_parts)
+        conclusion_lines = [
+            part.strip()
+            for line in conclusion.splitlines()
+            for part in line.split(";")
+            if part.strip()
+        ]
         reports.append(
             {
                 "id": sample.id,
                 "title": title,
-                "conclusion": " — ".join(conclusion_parts),
+                "conclusion": conclusion,
+                "conclusion_lines": conclusion_lines,
                 "timestamp": sample.created_at.strftime("%d/%m/%Y %H:%M"),
                 "author": "Cientistas",
             }
@@ -172,13 +181,14 @@ def lab_view():
         if sample_type not in ("water", "air"):
             flash("Tipo de amostra inválido.", "error")
             return redirect(url_for("student.lab_view"))
+        notas_origem = request.form.getlist("teste_origem")
         s = _LS(
             role_id=_cu.role_id,
             sample_type=sample_type,
             **measurements,
-            notes=_build_laudo_notes(measurements, sample_type, request.form.get("notes"), request.form.get("teste_origem")),
+            notes=_build_laudo_notes(measurements, sample_type, request.form.get("notes"), notas_origem),
             saved_to_dossier=bool(request.form.get("saved_to_dossier")),
-            teste_origem=request.form.get("teste_origem") or None,
+            teste_origem=notas_origem and " | ".join(notas_origem) or None,
         )
         _db.session.add(s); _db.session.commit()
         flash("Amostra registrada e salva no dossiê!" if s.saved_to_dossier else "Amostra registrada com sucesso!", "success")

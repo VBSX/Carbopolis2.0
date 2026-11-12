@@ -160,13 +160,18 @@ def interview_chat():
         "aluno ou representante de trabalho escolar, e nunca mencione trabalho de escola.\n\n"
         f"{SCOPE_GUARDRAIL} Pedidos fora do escopo também devem ser recusados no campo "
         '"resposta", sempre no formato JSON abaixo.\n\n'
+        "As perguntas em 'sugestoes' devem respeitar o conhecimento, a profissão e a "
+        "experiência do personagem entrevistado. Nunca sugira que ele responda algo que "
+        "não poderia saber; diferencie perguntas técnicas para especialistas de perguntas "
+        "sobre vivências e observações pessoais.\n\n"
         "VOCÊ DEVE RESPONDER ESTRITAMENTE NESTE FORMATO JSON:\n"
         "{\n"
         '  "resposta": "Texto da sua fala como o personagem.",\n'
-        '  "humor": "[Emoji] Estado de humor",\n'
+        '  "humor": "Emoji e descrição curta do estado emocional em palavras, por exemplo, 😒 Sentindo desconfiança. Nunca retorne apenas o emoji.",\n'
         f'  "sugestoes": ["Pergunta curta que a pessoa do grupo {user_role} poderia fazer '
-        'a você em seguida, escrita na voz e no interesse desse grupo, nunca na sua própria '
-        'voz nem na de outro grupo", "Opção 2 no mesmo formato"]\n'
+        'a você em seguida, escrita na voz e no interesse desse grupo, mas respeitando o '
+        'que você saberia responder; nunca na sua própria voz nem na de outro grupo", '
+        '"Opção 2 no mesmo formato"]\n'
         "}"
     )
 

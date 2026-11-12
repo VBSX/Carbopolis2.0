@@ -557,7 +557,7 @@ class CarbopolisApplicationTests(unittest.TestCase):
             role_id=self.roles["cientistas"].id,
             sample_type="water",
             ph_value=4.5,
-            notes="Risco de chuva ácida detectado",
+            notes="Risco de chuva ácida detectado\nObservar a vegetação próxima",
             saved_to_dossier=True,
         )
         unpublished = LabSample(
@@ -583,6 +583,10 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertEqual(reports[0]["title"], "Laudo de análise da água")
         self.assertIn("Risco de chuva ácida detectado", reports[0]["conclusion"])
         self.assertIn("pH: 4.5", reports[0]["conclusion"])
+        self.assertEqual(
+            reports[0]["conclusion_lines"],
+            ["Risco de chuva ácida detectado", "Observar a vegetação próxima", "pH: 4.5"],
+        )
         self.assertTrue(reports[0]["timestamp"])
         self.assertEqual(reports[0]["author"], "Cientistas")
         self.assertIsNotNone(published.created_at)
@@ -792,6 +796,8 @@ class CarbopolisApplicationTests(unittest.TestCase):
                     self.assertIn(f"representa o grupo '{role_labels[role_name]}'", system_instruction)
                     self.assertIn(f"identificador: '{role_name}'", system_instruction)
                     self.assertIn("nunca a chame de estudante", system_instruction)
+                    self.assertIn("Nunca retorne apenas o emoji", system_instruction)
+                    self.assertIn("respeitar o conhecimento, a profissão e a experiência", system_instruction)
                     self.assertNotIn("entrevista escolar", system_instruction)
                     self.assertTrue(
                         system_instruction.startswith(persona["system_instruction"])
@@ -800,6 +806,8 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertIn("desconfiada e hostil", NPC_PERSONAS["agricultora"]["system_instruction"])
         self.assertIn("raivosa e defensiva", NPC_PERSONAS["agricultora"]["system_instruction"])
         self.assertIn("vizinho ou vizinha", NPC_PERSONAS["agricultora"]["system_instruction"])
+        self.assertIn("não saberá atestar evidências científicas", NPC_PERSONAS["agricultora"]["system_instruction"])
+        self.assertIn("Suas sugestões de perguntas nunca pedirão", NPC_PERSONAS["agricultora"]["system_instruction"])
         self.assertIn("colega de diretoria", NPC_PERSONAS["eng_termo"]["system_instruction"])
         self.assertIn("concorrente direta", NPC_PERSONAS["eng_termo"]["system_instruction"])
         self.assertIn("colega de equipe", NPC_PERSONAS["eng_hidro"]["system_instruction"])
