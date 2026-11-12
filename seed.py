@@ -1,5 +1,6 @@
 """Seed via URL direta (skill neon-postgres: migracoes/seed usam UNPOOLED)."""
 import os
+from config import Config, normalize_database_url
 from app import create_app
 from extensions import db
 from models import ContentBlock, Role, SimulationVariable, Task
@@ -68,6 +69,7 @@ def run():
     direct = os.getenv("DATABASE_URL_UNPOOLED")
     if direct:
         os.environ["DATABASE_URL"] = direct
+        Config.SQLALCHEMY_DATABASE_URI = normalize_database_url(direct)
     app = create_app()
     with app.app_context():
         db.create_all()

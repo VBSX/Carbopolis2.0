@@ -26,7 +26,7 @@ import routes.chat as chat_routes
 import helpers.gemini as gemini_helper
 from helpers.gemini import GeminiUnavailableError, generate_reply
 from helpers.personas import NPC_PERSONAS, TUTOR_GLOBAL_INSTRUCTION, tutor_instruction_for
-from seed import CONTENTS, TASKS
+from seed import CONTENTS, ROLES, TASKS
 from models import (
     ContentBlock,
     InterviewLog,
@@ -224,6 +224,56 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertEqual(ContentBlock.query.count(), 3)
         self.assertEqual(SimulationVariable.query.count(), 6)
 
+    def test_admin_user_data_reset_requires_confirmation_and_preserves_passwords(self):
+        self.login("admin")
+        role = self.roles["comunidade"]
+        role.password = "ivai"
+        session = self.sessions["comunidade"]
+        db.session.add(
+            SavedQuote(
+                role_id=role.id,
+                character_name="Dona Maria",
+                quote_text="Depoimento a apagar",
+            )
+        )
+        db.session.commit()
+
+        self.client.get("/logout")
+        self.login("comunidade")
+        denied = self.client.get("/admin/reset-user-data")
+        self.assertEqual(denied.status_code, 302)
+        self.assertEqual(SavedQuote.query.count(), 1)
+
+        self.client.get("/logout")
+        self.login("admin")
+        preview = self.client.get("/admin/reset-user-data")
+        self.assertEqual(preview.status_code, 200)
+        self.assertIn(b"isso n\xc3\xa3o redefine as senhas", preview.data)
+        self.assertIn(b"Depoimentos salvos", preview.data)
+        csrf_token = re.search(
+            rb'name="csrf_token" value="([^"]+)"',
+            preview.data,
+        ).group(1).decode()
+
+        rejected = self.client.post(
+            "/admin/reset-user-data",
+            data={"csrf_token": csrf_token, "confirmation": "LIMPAR"},
+        )
+        self.assertEqual(rejected.status_code, 302)
+        self.assertEqual(SavedQuote.query.count(), 1)
+        self.assertIsNotNone(db.session.get(UserSession, session.id))
+
+        confirmed = self.client.post(
+            "/admin/reset-user-data",
+            data={"csrf_token": csrf_token, "confirmation": "LIMPAR DADOS"},
+        )
+        self.assertEqual(confirmed.status_code, 302)
+        self.assertEqual(confirmed.headers["Location"], "/login")
+        self.assertEqual(SavedQuote.query.count(), 0)
+        self.assertEqual(UserSession.query.count(), 0)
+        self.assertEqual(Role.query.filter_by(name="comunidade").one().password, "ivai")
+        self.assertEqual(Role.query.count(), len(STUDENT_ROLES) + 1)
+
     def get_as(self, role_name, path):
         self.login(role_name)
         return self.client.get(path, follow_redirects=False)
@@ -407,6 +457,19 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertIn(b"Rio Iva\xc3\xad (Cen\xc3\xa1rio Atual - \xc3\x81gua Limpa)", lab_page.data)
         self.assertIn(b"Proje\xc3\xa7\xc3\xa3o EIA: Efluentes de Resfriamento (Projeto TermoBR)", lab_page.data)
         self.assertIn(b"Proje\xc3\xa7\xc3\xa3o EIA: Emiss\xc3\xb5es Atmosf\xc3\xa9ricas (Projeto TermoBR", lab_page.data)
+
+    def test_seed_keeps_the_default_passwords_for_each_group(self):
+        passwords = {name: password for name, password, _display, _description in ROLES}
+        self.assertEqual(
+            passwords,
+            {
+                "termobr": "termo",
+                "hydrosul": "hidro",
+                "comunidade": "ivai",
+                "cientistas": "energia",
+                "admin": "admin",
+            },
+        )
 
     def test_seed_content_and_missions_use_preapproval_context(self):
         contents = {section: (title, body, button, hint) for section, title, body, button, hint in CONTENTS}
@@ -974,6 +1037,7 @@ class CarbopolisApplicationTests(unittest.TestCase):
             "/admin/",
             "/admin/content",
             "/admin/tasks",
+            "/admin/reset-user-data",
         ):
             with self.subTest(path=path):
                 self.assertEqual(self.client.get(path).status_code, 200)
@@ -995,6 +1059,8 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertEqual(content.image_url, "https://example.test/mapa.png")
         dashboard = self.client.get("/admin/")
         self.assertNotIn(b"Layout do mapa", dashboard.data)
+        self.assertIn(b"Limpar dados de atividade", dashboard.data)
+        self.assertIn(b"n\xc3\xa3o redefine senhas", dashboard.data)
         self.assertEqual(self.client.get("/admin/map-layout").status_code, 404)
 
         role_id = self.roles["comunidade"].id
