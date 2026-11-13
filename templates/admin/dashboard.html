@@ -10,7 +10,7 @@
 <div class="hud-panel p-3">Simulações<b class="block text-xl">{{ stats.sims }}</b></div>
 <div class="hud-panel p-3">Sessões<b class="block text-xl">{{ stats.sessions }}</b></div>
 </div>
-<div class="flex gap-2 mb-4">
+<div class="flex flex-wrap gap-2 mb-4">
 <a href="{{ url_for('admin.content_editor') }}" class="btn-hud btn-blue !w-auto"><i class="fa-solid fa-pen"></i> Conteúdo</a>
 <a href="{{ url_for('admin.task_editor') }}" class="btn-hud btn-blue !w-auto"><i class="fa-solid fa-list-check"></i> Missões</a>
 <a href="{{ url_for('admin.reset_user_data') }}" class="btn-hud !w-auto border border-red-500 text-red-200"><i class="fa-solid fa-trash-can"></i> Limpar dados de atividade</a>

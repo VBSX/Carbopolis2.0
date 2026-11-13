@@ -32,6 +32,9 @@ def _groq_reply(api_key, model, system_instruction, user_message, history, json_
     body = {"model": model, "messages": messages, "temperature": 0.7, "max_tokens": 2000}
     if model.startswith("openai/gpt-oss"):
         body["reasoning_effort"] = "low"
+    elif model.startswith("qwen/"):
+        # Otherwise Qwen prints <think> text, which leaks into answers and breaks JSON mode.
+        body["reasoning_effort"] = "none"
     if json_mode:
         body["response_format"] = {"type": "json_object"}
     request = urllib.request.Request(
@@ -98,15 +101,20 @@ def generate_reply(system_instruction, user_message, history=None, response_mime
                 ).text,
             ))
     if groq_key:
-        groq_model = current_app.config["GROQ_MODEL"]
+        groq_models = dict.fromkeys(
+            [current_app.config["GROQ_MODEL"], *current_app.config.get("GROQ_FALLBACK_MODELS", ())]
+        )
         # Groq goes first: ~1s answers versus 10-30s on Gemini's free tier.
-        attempts.insert(0, (
-            f"groq/{groq_model}",
-            lambda: _groq_reply(
-                groq_key, groq_model, system_instruction, user_message, history,
-                response_mime_type == "application/json",
-            ),
-        ))
+        attempts[:0] = [
+            (
+                f"groq/{model}",
+                lambda model=model: _groq_reply(
+                    groq_key, model, system_instruction, user_message, history,
+                    response_mime_type == "application/json",
+                ),
+            )
+            for model in groq_models
+        ]
 
     now = time.monotonic()
     # Stable sort: healthy models keep their priority order; cooling-down ones go last, never skipped.

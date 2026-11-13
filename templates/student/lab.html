@@ -4,7 +4,7 @@
 {% block content %}
 <h1 class="text-xl sm:text-2xl font-bold hud-title mb-1"><i class="fa-solid fa-flask text-cyan-300"></i> {{ intro.title }}</h1>
 <p class="text-sm text-slate-400 mb-3">{{ intro.body_text }}</p>
-{% if intro.image_url %}<img src="{{ intro.image_url }}" alt="{{ intro.title }}" class="w-full max-h-72 object-cover rounded-xl mb-3" onerror="this.classList.add('hidden')">{% endif %}
+{% if intro.image_url %}<img src="{{ intro.image_url }}" alt="{{ intro.title }}" class="w-full max-h-48 object-cover rounded-xl mb-3" onerror="this.classList.add('hidden')">{% endif %}
 <div class="hud-panel p-3 sm:p-4 mb-4 border border-amber-400/40">
 <h2 class="font-bold text-amber-200"><i class="fa-solid fa-route"></i> Como usar o laboratório</h2>
 <ol class="lab-roadmap mt-2">
@@ -19,31 +19,34 @@
 <section class="hud-panel p-3 sm:p-4 mb-4">
 <h2 class="font-bold text-lg">💧 Bancada 1 — Água do Rio Ivaí</h2>
 <p class="text-sm text-slate-400 mb-3">Descubra se a água ficaria ácida e se haveria oxigênio suficiente para os peixes.</p>
+
 <label class="lab-step" for="wSite"><span>1</span> Escolha o cenário de água</label>
-<select id="wSite" class="input-hud mb-3">
+<select id="wSite" class="input-hud">
 <option value="6.8" data-origin="Teste de pH — Rio Ivaí (cenário atual, água limpa)">🌊 Rio Ivaí (Cenário Atual - Água Limpa)</option>
 <option value="4.5" data-origin="Teste de pH — Efluentes de resfriamento (Projeto TermoBR)">🏭 Projeção EIA: Efluentes de Resfriamento (Projeto TermoBR)</option>
 <option value="5.5" data-origin="Teste de pH — Cenário de referência (zona agrícola)">🌾 Rio Ivaí — cenário de referência na zona agrícola</option>
 </select>
-<div class="grid sm:grid-cols-2 gap-3">
+
+<p class="lab-step mt-4"><span>2</span> Pingue o indicador e veja o pH</p>
+<div class="grid sm:grid-cols-2 gap-3 items-start">
 <div class="text-center">
-<p class="lab-step justify-center"><span>2</span> Pingue o indicador de pH</p>
 <div class="drop" id="wDrop"></div>
 <div class="tube" id="wTube"><div class="tube-liquid" id="wLiquid" style="height:55%;background:#38bdf8"></div></div>
 <button type="button" onclick="waterStep2()" class="btn-hud btn-blue mt-2">💧 Pipetar indicador</button>
 </div>
 <div>
-<p class="lab-step">Resultado do pH</p>
 <div id="wResult" class="hud-panel p-3 text-sm min-h-[90px]" aria-live="polite">Toque em <b>Pipetar indicador</b> para ver a cor e o pH.</div>
 <div class="flex items-center gap-1 mt-2 text-xs font-mono2" aria-label="Escala de cores do pH">
 <span style="background:#E53935" class="px-1 rounded">0-3</span><span style="background:#FB8C00" class="px-1 rounded">3-5</span><span style="background:#FDD835;color:#000" class="px-1 rounded">5-6.5</span><span style="background:#7ED6A0;color:#000" class="px-1 rounded">6.5-7.5</span><span style="background:#29B6F6" class="px-1 rounded">7.5-9</span><span style="background:#5C6BC0" class="px-1 rounded">9+</span>
 </div>
 <p class="text-xs text-slate-400 mt-1">Vermelho/laranja = ácida · verde = normal · azul = básica</p>
-<label class="lab-step mt-3" for="wTemp"><span>3</span> Informe a temperatura da água (°C)</label>
+</div>
+</div>
+
+<label class="lab-step mt-4" for="wTemp"><span>3</span> Informe a temperatura da água (°C) e estime o oxigênio</label>
 <div class="flex gap-2"><input id="wTemp" type="number" value="22" class="input-hud"><button type="button" onclick="waterStep4()" class="btn-hud btn-gold whitespace-nowrap">🌡️ Estimar oxigênio</button></div>
 <div id="wOD" class="text-sm mt-1 text-amber-200" aria-live="polite"></div>
-</div>
-</div>
+
 <details class="lab-help mt-3"><summary>📖 O que significam esses valores?</summary>
 <p><b>pH</b>: mede a acidez. 7 é neutro; abaixo de 6 ou acima de 9 prejudica a vida no rio.</p>
 <p><b>Oxigênio dissolvido</b>: oxigênio na água para os peixes respirarem. Abaixo de 5 mg/L há risco de morte de peixes. Água mais quente guarda menos oxigênio.</p>
@@ -54,31 +57,34 @@
 <section class="hud-panel p-3 sm:p-4 mb-4">
 <h2 class="font-bold text-lg">🌬️ Bancada 2 — Ar perto da usina</h2>
 <p class="text-sm text-slate-400 mb-3">Veja quanto gás poluente a usina poderia lançar no ar.</p>
+
 <label class="lab-step" for="aSite"><span>1</span> Escolha o cenário de emissões</label>
-<select id="aSite" class="input-hud mb-3" onchange="airPreset()">
+<select id="aSite" class="input-hud" onchange="airPreset()">
 <option value="45|55|68" data-origin="Teste de emissões — Perto da usina TermoBR (gás natural)">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, gás natural)</option>
 <option value="180|125|98" data-origin="Teste de emissões — Perto da usina TermoBR (carvão)">🏭 Projeção EIA: Emissões Atmosféricas (Projeto TermoBR, carvão)</option>
 <option value="12|15|30" data-origin="Teste de emissões — Zona agrícola (referência)">🌾 Referência: ar da zona agrícola</option>
 </select>
-<div class="grid sm:grid-cols-2 gap-3">
-<div>
-<p class="lab-step">Valores do cenário (ppm)</p>
+<p class="text-xs text-slate-400 mt-2 mb-1">Valores do cenário em ppm (pode ajustar):</p>
 <div class="grid grid-cols-3 gap-2">
 <label class="text-xs">SO<sub>2</sub><input id="aSO2" type="number" value="45" class="input-hud"></label>
 <label class="text-xs">NO<sub>x</sub><input id="aNOx" type="number" value="55" class="input-hud"></label>
 <label class="text-xs">CO<sub>2</sub><input id="aCO2" type="number" value="68" class="input-hud"></label>
 </div>
-<p class="lab-step mt-3"><span>2</span> Rode a simulação</p>
+
+<p class="lab-step mt-4"><span>2</span> Rode a simulação</p>
+<div class="grid sm:grid-cols-2 gap-3 items-start">
+<div>
 <button type="button" onclick="airStep2()" class="btn-hud btn-blue">⚗️ Simular análise</button>
 <div id="aResult" class="hud-panel p-3 text-sm mt-2 min-h-[70px]" aria-live="polite">Aguardando a simulação…</div>
 </div>
 <div class="text-center">
-<p class="lab-step justify-center">Medidor de SO<sub>2</sub></p>
+<p class="text-xs text-slate-400">Medidor de SO<sub>2</sub></p>
 <svg class="gauge" viewBox="0 0 200 110" aria-hidden="true"><path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#1e3a5f" stroke-width="14"/><path id="aArc" d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#22ffaa" stroke-width="14" stroke-dasharray="283" stroke-dashoffset="200"/><line id="aNeedle" x1="100" y1="100" x2="100" y2="30" stroke="#fbbf24" stroke-width="4" stroke-linecap="round" transform="rotate(-70 100 100)"/><circle cx="100" cy="100" r="8" fill="#fbbf24"/></svg>
 <div id="aGaugeVal" class="font-mono2 font-bold">45 ppm projetados</div>
 <p class="text-xs text-slate-400">Verde = dentro da referência · vermelho = atenção (acima de 100 ppm)</p>
 </div>
 </div>
+
 <details class="lab-help mt-3"><summary>📖 O que significam esses gases?</summary>
 <p><b>SO₂</b> (dióxido de enxofre): vem da queima de carvão e óleo. Acima de 100 ppm irrita a respiração, piora asma e causa chuva ácida.</p>
 <p><b>NOₓ</b> (óxidos de nitrogênio): surgem na queima em alta temperatura. Acima de 100 ppm prejudicam os pulmões e formam smog e chuva ácida.</p>
@@ -110,15 +116,20 @@
 <label class="text-sm">Observações do grupo (opcional)<input name="notes" id="fNotes" class="input-hud" placeholder="Ex.: o cenário a carvão passou do limite de SO₂"></label>
 <label class="text-sm flex items-center gap-2"><input type="checkbox" name="saved_to_dossier" checked class="w-6 h-6"> Salvar no Dossiê Final e publicar no Mural</label>
 <button id="fSave" class="btn-hud" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar Laudo no Dossiê</button>
-<p id="fSaveHint" class="text-xs text-amber-200">Faça pelo menos uma bancada para liberar o botão.</p>
+<p id="fSaveHint" class="text-xs text-amber-200 text-center">Faça pelo menos uma bancada para liberar o botão.</p>
 </form>
 </section>
 
-<div class="hud-panel p-3 sm:p-4 mb-4">
-<h2 class="font-bold"><i class="fa-solid fa-vial"></i> Minhas amostras</h2>
+<!-- ===== AMOSTRAS ===== -->
+<div class="grid sm:grid-cols-2 gap-4 mb-4">
+<div class="hud-panel p-3 sm:p-4">
+<h2 class="font-bold mb-2"><i class="fa-solid fa-vial"></i> Minhas amostras</h2>
 {% for s in samples %}{{ render_lab_sample(s, show_dossier_badge=true) }}{% else %}<p class="text-sm text-slate-400">Nenhuma amostra registrada.</p>{% endfor %}
-<h2 class="font-bold mt-3"><i class="fa-solid fa-share-nodes"></i> Laudos disponíveis para consulta</h2>
+</div>
+<div class="hud-panel p-3 sm:p-4">
+<h2 class="font-bold mb-2"><i class="fa-solid fa-share-nodes"></i> Laudos disponíveis para consulta</h2>
 {% for s in released %}{{ render_lab_sample(s) }}{% else %}<p class="text-sm text-slate-400">Nenhum laudo disponível para consulta.</p>{% endfor %}
+</div>
 </div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='js/lab.js') }}"></script>{% endblock %}

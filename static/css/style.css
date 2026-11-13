@@ -24,7 +24,6 @@ textarea.input-hud{min-height:120px}
 .bottombar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#081426f2;border-top:1px solid var(--hud-line);backdrop-filter:blur(8px);padding:.4rem .4rem calc(.4rem + env(safe-area-inset-bottom))}
 .bottombar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:#94a3b8;min-height:56px;justify-content:center;border-radius:.7rem;flex:1}
 .bottombar a.active,.bottombar a:hover{color:var(--neon);background:#22ffaa14}
-.content-pad{padding-bottom:96px}
 .tube{width:90px;height:220px;border:3px solid #7dd3fc;border-top:none;border-radius:0 0 2rem 2rem;margin:0 auto;position:relative;overflow:hidden;background:#0a173055}
 .tube-liquid{position:absolute;bottom:0;left:0;right:0;transition:height 1s,background 1s}
 .drop{width:10px;height:22px;background:#38bdf8;border-radius:50% 50% 60% 60%;margin:2px auto;opacity:0;transition:opacity .3s,transform .6s}

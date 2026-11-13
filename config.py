@@ -48,6 +48,12 @@ class Config:
         os.getenv("GEMINI_FALLBACK_MODEL", DEFAULT_GEMINI_FALLBACK_MODEL)
     )
     GROQ_MODEL = os.getenv("GROQ_MODEL") or "openai/gpt-oss-120b"
+    # Each Groq model has its own rate limit, so a chain survives one model's quota running out.
+    GROQ_FALLBACK_MODELS = [
+        m.strip()
+        for m in (os.getenv("GROQ_FALLBACK_MODELS") or "openai/gpt-oss-20b,qwen/qwen3.8-27b").split(",")
+        if m.strip()
+    ]
     SQLALCHEMY_DATABASE_URI = normalize_database_url(
         os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'carbopolis.db'}")
     )

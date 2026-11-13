@@ -942,6 +942,18 @@ class CarbopolisApplicationTests(unittest.TestCase):
         self.assertEqual(groq.call_args.args[0], "groq-key")
         self.assertTrue(groq.call_args.args[-1])
 
+    def test_groq_fallback_models_tried_in_order_before_gemini(self):
+        fake_client = MagicMock()
+        env = {"GEMINI_API_KEY": "test-key", "GROQ_API_KEY": "groq-key"}
+        config = {"GROQ_MODEL": "big", "GROQ_FALLBACK_MODELS": ["small", "qwen/q"]}
+        with patch.dict(os.environ, env), patch.dict(self.app.config, config):
+            with patch("google.genai.Client", return_value=fake_client):
+                with patch("helpers.gemini._groq_reply", side_effect=[OSError("quota"), "Resposta small"]) as groq:
+                    reply = generate_reply("Instrução", "Pergunta")
+        self.assertEqual(reply, "Resposta small")
+        self.assertEqual([c.args[1] for c in groq.call_args_list], ["big", "small"])
+        self.assertEqual(fake_client.models.generate_content.call_count, 0)
+
     def test_failed_model_is_tried_last_on_next_request(self):
         fake_client = MagicMock()
         fake_client.models.generate_content.side_effect = [

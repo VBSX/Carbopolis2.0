@@ -53,8 +53,9 @@
     inset:0;
     width:100vw;
     height:100vh;
+    height:100dvh;
     max-width:100vw;
-    max-height:100vh;
+    max-height:100dvh;
     border-radius:0;
     border:none;
     z-index:70;
@@ -63,5 +64,6 @@
   .ai-tutor-messages{padding:1rem}
   .ai-tutor-form{padding:1rem}
   .rpg-dialog{padding:.7rem}
+  .rpg-form{flex-direction:column}
   .rpg-messages{min-height:200px}
 }
